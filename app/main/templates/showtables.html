@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/echarts.js') }}"></script>
+<script>
+$(document).ready(function(){
+    var testchart = echarts.init(document.getElementsByClassName("testchart1")[0]);
+    var option = {
+        title: {
+            text: 'hinoc test'
+        },
+        tooltip:{},
+        legend: {
+            data:'show'
+        },
+        xAxis:{
+            data:['noise', 'npb']
+        },
+        yAxis:{},
+        series: {
+            name: 'value',
+            type: 'bar',
+            data:[100, 200]
+        }
+    };
+    testchart.setOption(option);
+});
+</script>
+{% endblock %}
+
+{% block page_content %}
+<body>
+    <div class="page-header">
+    <h3>Hi, There will be some pages</h3>
+    </div>
+    <div class="container">
+        <div class="testchart1 col-md-12" style="height:400px;"></div>
+    </div>
+</body>
+{% endblock %}
