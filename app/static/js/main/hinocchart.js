@@ -3,6 +3,7 @@ function HinocChart(chartType, container) {
         chartType = "line";
     }
     this.chartContainer = $('<div class="col-md-12" style="height:400px;"></div>')[0];
+    this.wholeContainer = $('<div class="col-md-12" style="height:420px;"></div>');
     container.append(this.chartContainer);
     this.chart = echarts.init(this.chartContainer);
     this.chartoption = {

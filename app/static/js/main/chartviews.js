@@ -40,4 +40,9 @@ $(document).ready(function(){
         chartnew = new HinocChart("bar", $("#charts-container")[0]);
         chartnew.show();
     });
+
+    $("#add-pan-btn").click(function() {
+        chartnew = new HinocChart("pan", $("#charts-container")[0]);
+        chartnew.show();
+    });
 });
