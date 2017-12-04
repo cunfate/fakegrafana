@@ -6,15 +6,18 @@ class HinocChartReact extends React.Component {
     render() {
         let self = this;
         return (
-            <div className="col-md-12" style={{height:420}}>
-                <div className="col-md-12" ref={function(ele){self._echartBar = ele;}} style={{height:20}}>
+            <div className="col-md-12 panel panel-default" style={{height:460}}>
+                <div className="col-md-12 panel-heading panel-primary" ref={function(ele){self._echartBar = ele;}}>
+                    <button type="button" className="btn btn-default">
+                        <span className="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+                    </button>
                     <button type="button" className="close" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                    <span className="glyphicon glyphicon-remove" aria-hidden="true"></span>
                     </button>
                 </div>
                 <div className="col-md-12" ref={function(ele){self._echartContainer = ele;}} style={{height:400}}>
                 </div>
-            </div> 
+            </div>
         );
     }
 
@@ -45,6 +48,16 @@ class HinocChartReact extends React.Component {
 
     showChart() {
         this._chart.setOption(this._chartoption);
+    }
+}
+
+class QueryModalReact extends React.Component{
+    constructor(...args) {
+        super(...args);
+    }
+
+    render() {
+        return <div />;
     }
 }
 
@@ -91,7 +104,6 @@ window.addEventListener("load",function(){
         ReactDOM.render(
             arr,
             chartContainer,
-            function() {hinocChartCounter++;}
         );
     };
 
