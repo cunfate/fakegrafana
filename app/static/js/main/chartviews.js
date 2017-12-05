@@ -1,6 +1,10 @@
 class HinocChartReact extends React.Component {
     constructor(...args) {
         super(...args);
+        this.state = {
+            startTime: null,
+            endTime: null
+        }
     }
 
     render() {
@@ -57,7 +61,17 @@ class QueryModalReact extends React.Component{
     }
 
     render() {
-        return <div></div>;
+        return 
+        <div className="modal fade" tabIndex="-1" role="dialog" aria-hidden="true">
+            <div className="modal-dialog">
+                <div className="modal-header">
+                </div>
+                <div className="modal-body">
+                </div>
+                <div className="modal-footer">
+                </div>
+            </div>
+        </div>;
     }
 }
 
@@ -99,7 +113,7 @@ window.addEventListener("load",function(){
     var arr = [];
     document.getElementById("add-liner-btn").onclick = function() {
         let chartContainer = document.getElementById("charts-container");
-        arr.push(<HinocChartReact key="{hinocChartCounter}" />);
+        arr.push(<HinocChartReact key={hinocChartCounter} />);
         hinocChartCounter ++;
         ReactDOM.render(
             arr,
