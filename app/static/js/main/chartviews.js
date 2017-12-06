@@ -1,3 +1,5 @@
+//import EventListener from "../eventlistener"
+
 class HinocChartReact extends React.Component {
     constructor(...args) {
         super(...args);
@@ -12,7 +14,7 @@ class HinocChartReact extends React.Component {
         return (
             <div className="col-md-12 panel panel-default" style={{height:460}}>
                 <div className="col-md-12 panel-heading panel-primary" ref={function(ele){self._echartBar = ele;}}>
-                    <button type="button" className="btn btn-default">
+                    <button type="button" className="btn btn-default" ref={function(ele){self._showConfigButton = ele;}}>
                         <span className="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
                     </button>
                     <button type="button" className="close" aria-label="Close">
@@ -42,12 +44,13 @@ class HinocChartReact extends React.Component {
             yAxis:{},
             series: {
                 name: 'value',
-                type: 'line',
+                type: this.props.charttype,
                 areaStyle:{normal:{}},
                 data:[]
             }
         };
         this.showChart();
+        this._showConfigButton.onclick = ()=>{this.props.showConfigTrigger();};
     }
 
     showChart() {
@@ -61,43 +64,62 @@ class QueryModalReact extends React.Component{
     }
 
     render() {
-        return 
-        <div className="modal fade" tabIndex="-1" role="dialog" aria-hidden="true">
+        let self = this;
+        return (
+        <div className="modal fade" tabIndex="-1" role="dialog" aria-hidden="true" ref={function(ele){self._modal = ele;}}>
             <div className="modal-dialog">
                 <div className="modal-header">
+                    <button type="button" className="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4>Set Statements</h4>
                 </div>
                 <div className="modal-body">
+                    <div className="input-group">
+                        <span className="input-group-addon">Query</span>
+                        <input type="text" className="form-control" place-holder="SELECT * FROM /.*/" />
+                    </div>
                 </div>
                 <div className="modal-footer">
+                    <button type="button" className="btn btn-primary">Submit</button>
                 </div>
             </div>
-        </div>;
+        </div>);
+    }
+    componentDidUpdate() {
+        if(this.props.showConfig === true) {
+            $(this._modal).show("modal");
+            this.props.clearShowFlag();
+        }
+    }
+}
+
+class HinocChartModuleReact extends React.Component{
+    constructor(...args) {
+        super(...args);
+    }
+
+    render() {
+        return(
+        <div className="hinoc-chart-container">
+            <HinocChartReact charttype={this.props.charttype} showConfigTrigger={()=>{this.showConfig;}}/>
+            <QueryModalReact showConfig={()=>{this.showConfig}} clearShowFlag={()=>{this.clearFlag}}/>
+        </div>);
+    }
+
+    showConfig() {
+        this.setState({
+            showConfig: true
+        });
+    }
+
+    clearFlag() {
+        this.setState({
+            showConfig: false
+        });
     }
 }
 
 window.addEventListener("load",function(){
     alert("setup over");
-    var testchart = echarts.init(document.getElementsByClassName("testchart1")[0]);
-    var option = {
-        title: {
-            text: 'hinoc test'
-        },
-        tooltip:{},
-        legend: {
-            data:'show'
-        },
-        xAxis:{
-            data:['noise', 'npb']
-        },
-        yAxis:{},
-        series: {
-            name: 'value',
-            type: 'line',
-            areaStyle:{normal:{}},
-            data:[100, 200]
-        }
-    };
-    testchart.setOption(option);
 
     document.getElementById("add-row").onclick = function() {
         document.getElementById("row-adder-bar").style.display="block";
@@ -111,9 +133,9 @@ window.addEventListener("load",function(){
 
     var hinocChartCounter = 1;
     var arr = [];
+    let chartContainer = document.getElementById("charts-container");
     document.getElementById("add-liner-btn").onclick = function() {
-        let chartContainer = document.getElementById("charts-container");
-        arr.push(<HinocChartReact key={hinocChartCounter} />);
+        arr.push(<HinocChartModuleReact key={hinocChartCounter} charttype="line" />);
         hinocChartCounter ++;
         ReactDOM.render(
             arr,
