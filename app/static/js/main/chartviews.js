@@ -104,6 +104,17 @@ class QueryModalReact extends React.Component{
         //TODO: complex checking the query statement's illegal
         return true;
     }
+
+    componentDidMount() {
+        let self = this;
+        if(this.queryTimer === undefined) {
+            this.queryTimer = setInterval(function(){
+                $.get("/mydb", {}, function(data){
+                    console.log(data);
+                });
+            }, 5000);
+        }
+    }
 }
 
 class HinocChartModuleReact extends React.Component{
@@ -141,7 +152,7 @@ class HinocChartModuleReact extends React.Component{
         console.log(this._influxdbquery);
     }
 
-    
+
 }
 
 $(document).ready(function(){
