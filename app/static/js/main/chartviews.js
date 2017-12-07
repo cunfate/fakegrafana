@@ -50,7 +50,7 @@ class HinocChartReact extends React.Component {
             }
         };
         this.showChart();
-        this._showConfigButton.onclick = ()=>{this.props.showConfigTrigger();};
+        this._showConfigButton.addEventListener("click", ()=>{this.props.showConfigTrigger();}, false);
     }
 
     showChart() {
@@ -95,13 +95,16 @@ class QueryModalReact extends React.Component{
 class HinocChartModuleReact extends React.Component{
     constructor(...args) {
         super(...args);
+        this.state = {
+            showConfig: false
+        };
     }
 
     render() {
         return(
         <div className="hinoc-chart-container">
-            <HinocChartReact charttype={this.props.charttype} showConfigTrigger={()=>{this.showConfig;}}/>
-            <QueryModalReact showConfig={()=>{this.showConfig}} clearShowFlag={()=>{this.clearFlag}}/>
+            <HinocChartReact charttype={this.props.charttype} showConfigTrigger={()=>{this.showConfig();}}/>
+            <QueryModalReact showConfig={this.state.showConfig} clearShowFlag={()=>{this.clearFlag();}}/>
         </div>);
     }
 
@@ -118,7 +121,7 @@ class HinocChartModuleReact extends React.Component{
     }
 }
 
-window.addEventListener("load",function(){
+$(document).ready(function(){
     alert("setup over");
 
     document.getElementById("add-row").onclick = function() {
@@ -149,4 +152,4 @@ window.addEventListener("load",function(){
 
     document.getElementById("add-pan-btn").onclick = function() {
     };
-},false);
+});
