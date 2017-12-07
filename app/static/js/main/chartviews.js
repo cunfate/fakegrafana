@@ -75,11 +75,11 @@ class QueryModalReact extends React.Component{
                 <div className="modal-body">
                     <div className="input-group">
                         <span className="input-group-addon">Query</span>
-                        <input type="text" className="form-control" place-holder="SELECT * FROM /.*/" />
+                        <input type="text" className="form-control" place-holder="SELECT * FROM /.*/" ref={(ele)=>{this._queryString = ele;}} />
                     </div>
                 </div>
                 <div className="modal-footer">
-                    <button type="button" className="btn btn-primary">Submit</button>
+                    <button type="button" className="btn btn-primary" onClick={()=>{this.submitQuery();}}>Submit</button>
                 </div>
             </div>
         </div>);
@@ -89,6 +89,19 @@ class QueryModalReact extends React.Component{
             $(this._modal).modal("show");
             this.props.clearShowFlag();
         }
+    }
+
+    submitQuery() {
+        $(this._modal).modal("hide");
+        let queryString = this._queryString;
+        if(!this.checkQuerySafe(queryString)) {
+            return false;
+        }
+        this.updateQuery(queryString);
+    }
+
+    checkQuerySafe(query) {
+        return true;
     }
 }
 
