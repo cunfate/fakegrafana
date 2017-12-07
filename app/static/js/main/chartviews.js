@@ -86,7 +86,7 @@ class QueryModalReact extends React.Component{
     }
     componentDidUpdate() {
         if(this.props.showConfig === true) {
-            $(this._modal).show("modal");
+            $(this._modal).modal("show");
             this.props.clearShowFlag();
         }
     }
