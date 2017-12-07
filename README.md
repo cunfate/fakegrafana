@@ -2,7 +2,7 @@
 
 > a web app imitate grafana, which can do some monitoring web app.
 
-To use this app, you should install python > 3.5.
+To use this app, you should install python >= 3.5.
 
 ```sh
 git clone https://github.com/cunfate/fakegrafana.git

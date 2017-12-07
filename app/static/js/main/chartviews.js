@@ -93,14 +93,15 @@ class QueryModalReact extends React.Component{
 
     submitQuery() {
         $(this._modal).modal("hide");
-        let queryString = this._queryString;
+        let queryString = this._queryString.value;
         if(!this.checkQuerySafe(queryString)) {
             return false;
         }
-        this.updateQuery(queryString);
+        this.props.updateQuery(queryString);
     }
 
     checkQuerySafe(query) {
+        //TODO: complex checking the query statement's illegal
         return true;
     }
 }
@@ -111,13 +112,15 @@ class HinocChartModuleReact extends React.Component{
         this.state = {
             showConfig: false
         };
+        this._influxdbquery = "";
     }
 
     render() {
         return(
         <div className="hinoc-chart-container">
             <HinocChartReact charttype={this.props.charttype} showConfigTrigger={()=>{this.showConfig();}}/>
-            <QueryModalReact showConfig={this.state.showConfig} clearShowFlag={()=>{this.clearFlag();}}/>
+            <QueryModalReact showConfig={this.state.showConfig} clearShowFlag={()=>{this.clearFlag();}} 
+            updateQuery={(query)=>{this.updateQuery(query);}}/>
         </div>);
     }
 
@@ -132,6 +135,13 @@ class HinocChartModuleReact extends React.Component{
             showConfig: false
         });
     }
+
+    updateQuery(query) {
+        this._influxdbquery = query;
+        console.log(this._influxdbquery);
+    }
+
+    
 }
 
 $(document).ready(function(){
