@@ -104,17 +104,6 @@ class QueryModalReact extends React.Component{
         //TODO: complex checking the query statement's illegal
         return true;
     }
-
-    componentDidMount() {
-        let self = this;
-        if(this.queryTimer === undefined) {
-            this.queryTimer = setInterval(function(){
-                $.get("/mydb", {}, function(data){
-                    console.log(data);
-                });
-            }, 5000);
-        }
-    }
 }
 
 class HinocChartModuleReact extends React.Component{
@@ -135,6 +124,17 @@ class HinocChartModuleReact extends React.Component{
         </div>);
     }
 
+    componentDidMount() {
+        let self = this;
+        if(this.queryTimer === undefined) {
+            this.queryTimer = setInterval(function(){
+                $.get("/mydb", {query: self._influxdbquery}, function(data){
+                    console.log(data);
+                });
+            }, 5000);
+        }
+    }
+
     showConfig() {
         this.setState({
             showConfig: true
@@ -150,6 +150,10 @@ class HinocChartModuleReact extends React.Component{
     updateQuery(query) {
         this._influxdbquery = query;
         console.log(this._influxdbquery);
+    }
+
+    getQuery(query) {
+        return this._influxdbquery;
     }
 
 
@@ -181,7 +185,12 @@ $(document).ready(function(){
     };
 
     document.getElementById("add-bar-btn").onclick = function() {
-
+        arr.push(<HinocChartModuleReact key={hinocChartCounter} charttype="bar" />);
+        hinocChartCounter ++;
+        ReactDOM.render(
+            arr,
+            chartContainer
+        );
     };
 
     document.getElementById("add-pan-btn").onclick = function() {

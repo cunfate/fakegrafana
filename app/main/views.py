@@ -9,7 +9,11 @@ def index_page():
     return render_template('showtables.html')
 
 
-@main.route('/mydb')
+@main.route('mydb')
 def mydb():
-    print(request.args.items)
+    querystr = request.args.get('query')
+    influx = HinocInfluxDBClient(host='162.105.155.39', port=8086, username='root',
+            database='hinoc_inform', proxies={'http':'http://zhangcun:Hinoc2505@162.105.155.14:3128'})
+    result = influx.query(querystr)
+    print('{0}'.format(result))
     return '{"success": true}'
