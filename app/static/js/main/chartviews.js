@@ -17,7 +17,7 @@ class HinocChartReact extends React.Component {
                     <button type="button" className="btn btn-default" ref={function(ele){self._showConfigButton = ele;}}>
                         <span className="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
                     </button>
-                    <button type="button" className="close" aria-label="Close">
+                    <button type="button" className="close" aria-label="Close" onClick={()=>{this.moduleClose()}}>
                     <span className="glyphicon glyphicon-remove" aria-hidden="true"></span>
                     </button>
                 </div>
@@ -87,6 +87,14 @@ class HinocChartReact extends React.Component {
     showChart() {
         this._chart.setOption(this._chartoption);
     }
+
+    moduleClose() {
+        console.log("Clicked! - 1");
+        if(this.props.moduleClose) {
+            console.log("Clicked! - 2");
+            this.props.moduleClose();
+        }
+    }
 }
 
 class QueryModalReact extends React.Component{
@@ -143,20 +151,22 @@ class HinocChartModuleReact extends React.Component{
         this.state = {
             showConfig: false,
             chartValue: [],
-            chartName: "new hinoc chart"
+            chartName: "new hinoc chart",
+            mouduleClose: false
         };
         this._influxdbquery = "";
         this._chartValue = null;
     }
 
     render() {
-        return(
+        return (this.state.mouduleClose ? (null) : (
         <div className="hinoc-chart-container">
             <HinocChartReact charttype={this.props.charttype} showConfigTrigger={()=>{this.showConfig();}} 
-            chartValue={this.state.chartValue} chartName={this.state.chartName}/>
+            chartValue={this.state.chartValue} chartName={this.state.chartName} moduleClose={()=>{ this.setState({mouduleClose:true}); }}/>
             <QueryModalReact showConfig={this.state.showConfig} clearShowFlag={()=>{this.clearFlag();}} 
             updateQuery={(query)=>{this.updateQuery(query);}}/>
-        </div>);
+        </div>)
+        );
     }
 
     componentDidMount() {
