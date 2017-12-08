@@ -39,7 +39,10 @@ class HinocChartReact extends React.Component {
                 data:'show'
             },
             xAxis:{
-                data:[]
+                type: "time",
+                splitLine: {
+                    show: false
+                }
             },
             yAxis:{},
             series: {
@@ -47,7 +50,24 @@ class HinocChartReact extends React.Component {
                 type: this.props.charttype,
                 areaStyle:{normal:{}},
                 data:[]
-            }
+            },
+            dataZoom: [{
+                type: 'inside',
+                start: 0,
+                end: 10
+            }, {
+                start: 0,
+                end: 10,
+                handleIcon: 'M10.7,11.9v-1.3H9.3v1.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4v1.3h1.3v-1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+                handleSize: '80%',
+                handleStyle: {
+                    color: '#fff',
+                    shadowBlur: 3,
+                    shadowColor: 'rgba(0, 0, 0, 0.6)',
+                    shadowOffsetX: 2,
+                    shadowOffsetY: 2
+                }
+            }]
         };
         this.showChart();
         this._showConfigButton.addEventListener("click", ()=>{this.props.showConfigTrigger();}, false);
@@ -55,10 +75,13 @@ class HinocChartReact extends React.Component {
 
     componentDidUpdate() {
         console.log(this.props);
-        this._chartoption.series.data = this.props.chartValue.map( x => x[1] );
-        this._chartoption.xAxis.data = this.props.chartValue.map( x =>x[0].split(".")[0].replace("T", " ") );
-        console.log(this._chartoption);
-        this.showChart();
+        let data = this.props.chartValue.map( x => {return {name: x[0].split(".")[0].replace("T", " "),value:[x[0].split(".")[0].replace("T", " "), x[1]] }} );
+        this._chart.setOption({
+            series:[{data: data}],
+            title:{
+                text: this.props.chartName
+            }
+        });
     }
 
     showChart() {
@@ -119,7 +142,8 @@ class HinocChartModuleReact extends React.Component{
         super(...args);
         this.state = {
             showConfig: false,
-            chartValue: []
+            chartValue: [],
+            chartName: "new hinoc chart"
         };
         this._influxdbquery = "";
         this._chartValue = null;
@@ -129,7 +153,7 @@ class HinocChartModuleReact extends React.Component{
         return(
         <div className="hinoc-chart-container">
             <HinocChartReact charttype={this.props.charttype} showConfigTrigger={()=>{this.showConfig();}} 
-            chartValue={this.state.chartValue}/>
+            chartValue={this.state.chartValue} chartName={this.state.chartName}/>
             <QueryModalReact showConfig={this.state.showConfig} clearShowFlag={()=>{this.clearFlag();}} 
             updateQuery={(query)=>{this.updateQuery(query);}}/>
         </div>);
@@ -143,7 +167,8 @@ class HinocChartModuleReact extends React.Component{
                     console.log(data);
                     self.setState({
                         showConfig: self.state.showConfig,
-                        chartValue: data.series[0].values
+                        chartValue: data.series[0].values,
+                        chartName: data.series[0].name
                     });
                 });
             }, 5000);
