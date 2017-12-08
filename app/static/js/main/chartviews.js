@@ -53,6 +53,14 @@ class HinocChartReact extends React.Component {
         this._showConfigButton.addEventListener("click", ()=>{this.props.showConfigTrigger();}, false);
     }
 
+    componentDidUpdate() {
+        console.log(this.props);
+        this._chartoption.series.data = this.props.chartValue.map( x => x[1] );
+        this._chartoption.xAxis.data = this.props.chartValue.map( x =>x[0].split(".")[0].replace("T", " ") );
+        console.log(this._chartoption);
+        this.showChart();
+    }
+
     showChart() {
         this._chart.setOption(this._chartoption);
     }
@@ -110,15 +118,18 @@ class HinocChartModuleReact extends React.Component{
     constructor(...args) {
         super(...args);
         this.state = {
-            showConfig: false
+            showConfig: false,
+            chartValue: []
         };
         this._influxdbquery = "";
+        this._chartValue = null;
     }
 
     render() {
         return(
         <div className="hinoc-chart-container">
-            <HinocChartReact charttype={this.props.charttype} showConfigTrigger={()=>{this.showConfig();}}/>
+            <HinocChartReact charttype={this.props.charttype} showConfigTrigger={()=>{this.showConfig();}} 
+            chartValue={this.state.chartValue}/>
             <QueryModalReact showConfig={this.state.showConfig} clearShowFlag={()=>{this.clearFlag();}} 
             updateQuery={(query)=>{this.updateQuery(query);}}/>
         </div>);
@@ -130,6 +141,10 @@ class HinocChartModuleReact extends React.Component{
             this.queryTimer = setInterval(function(){
                 $.get("/mydb", {query: self._influxdbquery}, function(data){
                     console.log(data);
+                    self.setState({
+                        showConfig: self.state.showConfig,
+                        chartValue: data.series[0].values
+                    });
                 });
             }, 5000);
         }
