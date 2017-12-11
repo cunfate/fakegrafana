@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 *.swp
 os
+hinocdb.py
+hinoc_modules/
