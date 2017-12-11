@@ -151,10 +151,14 @@ class QueryModalReact extends React.Component{
     submitQuery() {
         $(this._modal).modal("hide");
         let queryString = this._queryString.value;
+        let startTimeTextLabel = this.refs.startTimeSelector.getElementByClassName("form-control")[0];
+        let endTimeTextLabel = this.refs.endTimeSelector.getElementByClassName("form-control")[0];
+        let startTime = startTimeTextLabel.value;
+        let endTime = endTimeTextLabel.value;
         if(!this.checkQuerySafe(queryString)) {
             return false;
         }
-        this.props.updateQuery(queryString);
+        this.props.updateQuery(queryString, startTime, endTime);
     }
 
     checkQuerySafe(query) {
@@ -217,8 +221,9 @@ class HinocChartModuleReact extends React.Component{
         });
     }
 
-    updateQuery(query) {
-        this._influxdbquery = query;
+    updateQuery(query, start, end) {
+        //todo: parse sql statement and insert time stamp to somewhere right
+        this._influxdbquery = `${query} WHERE time > '${start}' AND time < '${end}'`;
         console.log(this._influxdbquery);
     }
 
