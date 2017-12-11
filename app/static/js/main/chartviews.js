@@ -116,6 +116,10 @@ class QueryModalReact extends React.Component{
                         <span className="input-group-addon">Query</span>
                         <input type="text" className="form-control" place-holder="SELECT * FROM /.*/" ref={(ele)=>{this._queryString = ele;}} />
                     </div>
+                    <div className="input-group date" ref="timeSelector">
+                        <span className="input-group-btn add-on"><button type="button" className="btn btn-default"><span className="glyphicon glyphicon-calendar" aria-hidden="true"></span></button></span>
+                        <input type="text" className="form-control" data-format="yyyy-MM-dd HH:mm:ss" type="text"></input>
+                    </div>
                 </div>
                 <div className="modal-footer">
                     <button type="button" className="btn btn-primary" onClick={()=>{this.submitQuery();}}>Submit</button>
@@ -123,6 +127,15 @@ class QueryModalReact extends React.Component{
             </div>
         </div>);
     }
+
+    componentDidMount() {
+        console.log(this.refs.timeSelector);
+        $(this.refs.timeSelector).datetimepicker({
+            language: 'en'
+        });
+        console.log($(this.refs.timeSelector).datetimepicker);
+    }
+
     componentDidUpdate() {
         if(this.props.showConfig === true) {
             $(this._modal).modal("show");
@@ -173,6 +186,8 @@ class HinocChartModuleReact extends React.Component{
         let self = this;
         if(this.queryTimer === undefined) {
             this.queryTimer = setInterval(function(){
+                if(self._influxdbquery===undefined || self._influxdbquery === "" || self._influxdbquery.length === 0)
+                    return;
                 $.get("/mydb", {query: self._influxdbquery}, function(data){
                     console.log(data);
                     self.setState({

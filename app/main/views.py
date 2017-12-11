@@ -13,7 +13,7 @@ def index_page():
 def mydb():
     querystr = request.args.get('query')
     if querystr == "" or querystr == None:
-        return None
+        return jsonify([])
     influx = HinocInfluxDBClient(host='162.105.155.39', port=8086, username='root',
             database='hinoc_inform', proxies={'http':'http://zhangcun:Hinoc2505@162.105.155.14:3128'})
     result = influx.query(querystr)
