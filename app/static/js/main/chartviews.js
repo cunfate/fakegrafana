@@ -158,6 +158,7 @@ class QueryModalReact extends React.Component{
         if(!this.checkQuerySafe(queryString)) {
             return false;
         }
+        console.log(queryString, startTime, endTime);
         this.props.updateQuery(queryString, startTime, endTime);
     }
 
@@ -186,7 +187,7 @@ class HinocChartModuleReact extends React.Component{
             <HinocChartReact charttype={this.props.charttype} showConfigTrigger={()=>{this.showConfig();}} 
             chartValue={this.state.chartValue} chartName={this.state.chartName} moduleClose={()=>{ this.setState({mouduleClose:true}); }}/>
             <QueryModalReact showConfig={this.state.showConfig} clearShowFlag={()=>{this.clearFlag();}} 
-            updateQuery={(query)=>{this.updateQuery(query);}}/>
+            updateQuery={(query, start, end)=>{this.updateQuery(query, start, end);}}/>
         </div>)
         );
     }
@@ -199,6 +200,9 @@ class HinocChartModuleReact extends React.Component{
                     return;
                 $.get("/mydb", {query: self._influxdbquery}, function(data){
                     console.log(data);
+                    if(data.series === undefined) {
+                        return;
+                    }
                     self.setState({
                         showConfig: self.state.showConfig,
                         chartValue: data.series[0].values,
@@ -223,6 +227,7 @@ class HinocChartModuleReact extends React.Component{
 
     updateQuery(query, start, end) {
         //todo: parse sql statement and insert time stamp to somewhere right
+        console.log(query, start, end);
         this._influxdbquery = `${query} WHERE time > '${start}' AND time < '${end}'`;
         console.log(this._influxdbquery);
     }
