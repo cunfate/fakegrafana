@@ -151,8 +151,8 @@ class QueryModalReact extends React.Component{
     submitQuery() {
         $(this._modal).modal("hide");
         let queryString = this._queryString.value;
-        let startTimeTextLabel = this.refs.startTimeSelector.getElementByClassName("form-control")[0];
-        let endTimeTextLabel = this.refs.endTimeSelector.getElementByClassName("form-control")[0];
+        let startTimeTextLabel = this.refs.startTimeSelector.getElementsByClassName("form-control")[0];
+        let endTimeTextLabel = this.refs.endTimeSelector.getElementsByClassName("form-control")[0];
         let startTime = startTimeTextLabel.value;
         let endTime = endTimeTextLabel.value;
         if(!this.checkQuerySafe(queryString)) {
