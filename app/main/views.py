@@ -14,9 +14,9 @@ def index_page():
 def mydb():
     proxy = os.getenv('HTTP_PROXY')
     querystr = request.args.get('query')
-    if querystr == "" or querystr == None:
-        return jsonify([])
-    influx = HinocInfluxDBClient(host='162.105.155.39', port=8086, username='root',
+    if querystr == "" or querystr is None:
+        return jsonify([]), 403
+    influx = HinocInfluxDBClient(host='127.0.0.1', port=8086, username='root',
             database='hinoc_inform', proxies={'http': proxy})
     result = influx.query(querystr)
     return jsonify(result.raw)
