@@ -19,5 +19,5 @@ def mydb():
     influx = HinocInfluxDBClient(host='127.0.0.1', port=8086, username='root',
             database='hinoc_inform', proxies={'http': proxy})
     result = influx.query(querystr)
-    print(result.raw)
+    # print(result.raw)
     return jsonify(result.raw)
