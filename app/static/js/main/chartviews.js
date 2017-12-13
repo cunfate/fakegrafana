@@ -117,13 +117,14 @@ class QueryModalReact extends React.Component{
                         <input type="text" className="form-control" place-holder="SELECT * FROM /.*/" ref={(ele)=>{this._queryString = ele;}} />
                     </div>
                     <div className="input-group date" ref="startTimeSelector">
-                        <span className="input-group-btn add-on"><button type="button" className="btn btn-default"><span className="glyphicon glyphicon-calendar" aria-hidden="true"></span></button></span>
+                        <span className="input-group-btn add-on"><button type="button" className="btn btn-default">Start <span className="glyphicon glyphicon-calendar" aria-hidden="true"></span></button></span>
                         <input type="text" className="form-control" data-format="yyyy-MM-dd HH:mm:ss" type="text"></input>
                     </div>
                     <div className="input-group date" ref="endTimeSelector">
-                        <span className="input-group-btn add-on"><button type="button" className="btn btn-default"><span className="glyphicon glyphicon-calendar" aria-hidden="true"></span></button></span>
+                        <span className="input-group-btn add-on"><button type="button" className="btn btn-default"> End  <span className="glyphicon glyphicon-calendar" aria-hidden="true"></span></button></span>
                         <input type="text" className="form-control" data-format="yyyy-MM-dd HH:mm:ss" type="text"></input>
                     </div>
+                    <button className="btn btn-primary" type="button">History</button>
                 </div>
                 <div className="modal-footer">
                     <button type="button" className="btn btn-primary" onClick={()=>{this.submitQuery();}}>Submit</button>
