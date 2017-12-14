@@ -1,4 +1,4 @@
-//import EventListener from "../eventlistener"
+//import {EventListener} from "../eventlistener"
 
 class HinocChartReact extends React.Component {
     constructor(...args) {

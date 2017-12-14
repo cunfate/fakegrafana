@@ -60,6 +60,8 @@ EventListenerPoll = (function(){
     };
 })();
 
+export {EventProxy as EventListener};
+
 
 
 
