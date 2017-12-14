@@ -7,8 +7,14 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
   module: {
-    loaders: [{
-      loaders: ['babel-loader?presets[]=es2015,presets[]=react']
+    rules: [{
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/, // 这里面的不解析
+        loader: 'babel-loader',
+        query: {
+            presets: ['react', 'es2015'],
+            compact: false
+        }
     }]
   }
 };

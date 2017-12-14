@@ -1,6 +1,6 @@
 import {EventListener} from "../eventlistener"
-import {React} from "react"
-import {ReactDOM} from "react-dom"
+import React from "react"
+import ReactDOM from "react-dom"
 
 class HinocChartReact extends React.Component {
     constructor(...args) {

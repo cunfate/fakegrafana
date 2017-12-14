@@ -42,7 +42,7 @@ class EventProxy {
     }
 }
 
-EventListenerPoll = (function(){
+let EventListenerPoll = (function(){
     var _singleton = {};
     function creatProxy(key) {
         if(_singleton[key] === undefined) {
@@ -60,7 +60,7 @@ EventListenerPoll = (function(){
     };
 })();
 
-export {EventProxy as EventListener};
+export {EventProxy as EventListener, EventListenerPoll};
 
 
 
