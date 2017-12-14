@@ -5,3 +5,4 @@ __pycache__/
 os
 hinocdb.py
 hinoc_modules/
+node_modules/

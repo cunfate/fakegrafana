@@ -1,4 +1,6 @@
-//import {EventListener} from "../eventlistener"
+import {EventListener} from "../eventlistener"
+import {React} from "react"
+import {ReactDOM} from "react-dom"
 
 class HinocChartReact extends React.Component {
     constructor(...args) {
@@ -100,6 +102,9 @@ class HinocChartReact extends React.Component {
 class QueryModalReact extends React.Component{
     constructor(...args) {
         super(...args);
+        this.state = {
+            realtimeMode : "history"
+        };
     }
 
     render() {
@@ -124,7 +129,7 @@ class QueryModalReact extends React.Component{
                         <span className="input-group-btn add-on"><button type="button" className="btn btn-default"> End  <span className="glyphicon glyphicon-calendar" aria-hidden="true"></span></button></span>
                         <input type="text" className="form-control" data-format="yyyy-MM-dd HH:mm:ss" type="text"></input>
                     </div>
-                    <button className="btn btn-primary" type="button">History</button>
+                    <button className="btn btn-primary" type="button" ref="realtimebtn" onClick={()=>{this.switchRealTimeMode()}}>{this.state.realtimeMode}</button>
                 </div>
                 <div className="modal-footer">
                     <button type="button" className="btn btn-primary" onClick={()=>{this.submitQuery();}}>Submit</button>
@@ -167,6 +172,18 @@ class QueryModalReact extends React.Component{
         //TODO: complex checking the query statement's illegal
         return true;
     }
+
+    switchRealTimeMode() {
+        if(this.state.realtimeMode == "realtime") {
+            this.setState({realtimeMode: "history"});
+        }
+        else if(this.state.realtimeMode == "history") {
+            this.setState({realtimeMode: "realtime"});
+        }
+        else {
+            this.setState({realtimeMode: "history"});
+        }
+    }
 }
 
 class HinocChartModuleReact extends React.Component{
@@ -197,7 +214,7 @@ class HinocChartModuleReact extends React.Component{
         let self = this;
         if(this.queryTimer === undefined) {
             this.queryTimer = setInterval(function(){
-                if(self._influxdbquery===undefined || self._influxdbquery === "" || self._influxdbquery.length === 0)
+                if(self._influxdbquery === undefined || self._influxdbquery === "" || self._influxdbquery.length === 0)
                     return;
                 $.get("/mydb", {query: self._influxdbquery}, function(data){
                     console.log(data);
