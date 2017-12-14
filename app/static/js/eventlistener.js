@@ -42,12 +42,21 @@ class EventProxy {
     }
 }
 
+//
 let EventListenerPoll = (function(){
     var _singleton = {};
     function creatProxy(key) {
-        if(_singleton[key] === undefined) {
-            _singleton[key] = new EventProxy;
+        if(key === undefined 
+            || key === null 
+            || typeof key !== "string" 
+            || key.length === 0 
+            || _singleton[key] !== undefined) {
+                console.log("Invalid key in EventListener poll!");
+                return null;
         }
+
+        _singleton[key] = new EventProxy;
+        return _singleton[key];
     };
 
     function getProxy(key) {

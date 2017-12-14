@@ -1,4 +1,4 @@
-import {EventListener} from "../eventlistener"
+import {EventListener, EventListenerPoll} from "../eventlistener"
 import React from "react"
 import ReactDOM from "react-dom"
 
@@ -197,6 +197,7 @@ class HinocChartModuleReact extends React.Component{
         };
         this._influxdbquery = "";
         this._chartValue = null;
+        this._eventListener = EventListenerPoll.create(this.props.keyid);
     }
 
     render() {
@@ -274,7 +275,7 @@ $(document).ready(function(){
     var arr = [];
     let chartContainer = document.getElementById("charts-container");
     document.getElementById("add-liner-btn").onclick = function() {
-        arr.push(<HinocChartModuleReact key={hinocChartCounter} charttype="line" />);
+        arr.push(<HinocChartModuleReact key={hinocChartCounter} charttype="line" keyid={`${hinocChartCounter}`}/>);
         hinocChartCounter ++;
         ReactDOM.render(
             arr,
@@ -283,7 +284,7 @@ $(document).ready(function(){
     };
 
     document.getElementById("add-bar-btn").onclick = function() {
-        arr.push(<HinocChartModuleReact key={hinocChartCounter} charttype="bar" />);
+        arr.push(<HinocChartModuleReact key={hinocChartCounter} charttype="bar" keyid={`${hinocChartCounter}`}/>);
         hinocChartCounter ++;
         ReactDOM.render(
             arr,
@@ -292,5 +293,11 @@ $(document).ready(function(){
     };
 
     document.getElementById("add-pan-btn").onclick = function() {
+        arr.push(<HinocChartModuleReact key={hinocChartCounter} charttype="pie" keyid={`${hinocChartCounter}`}/>);
+        hinocChartCounter ++;
+        ReactDOM.render(
+            arr,
+            chartContainer
+        );
     };
 });

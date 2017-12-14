@@ -12,12 +12,12 @@ def index_page():
 
 @main.route('mydb')
 def mydb():
-    proxy = os.getenv('HTTP_PROXY')
+    #proxy = os.getenv('HTTP_PROXY')
     querystr = request.args.get('query')
     if querystr == "" or querystr is None:
         return jsonify([]), 500
     influx = HinocInfluxDBClient(host='127.0.0.1', port=8086, username='root',
-            database='hinoc_inform', proxies={'http': proxy})
+            database='hinoc_inform')
     result = influx.query(querystr)
     # print(result.raw)
     return jsonify(result.raw)
