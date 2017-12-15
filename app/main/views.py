@@ -16,7 +16,7 @@ def mydb():
     querystr = request.args.get('query')
     if querystr == "" or querystr is None:
         return jsonify([]), 500
-    influx = HinocInfluxDBClient(host='127.0.0.1', port=8086, username='root',
+    influx = HinocInfluxDBClient(host='162.105.155.39', port=8086, username='root',
             database='hinoc_inform')
     result = influx.query(querystr)
     # print(result.raw)

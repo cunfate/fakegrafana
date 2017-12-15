@@ -1118,6 +1118,7 @@ var QueryModalReact = function (_React$Component2) {
         _this4.state = {
             realtimeMode: "history"
         };
+        _this4._eventListener = _eventlistener.EventListenerPoll.get(_this4.props.keyid);
         return _this4;
     }
 
@@ -1225,6 +1226,7 @@ var QueryModalReact = function (_React$Component2) {
             $(this.refs.endTimeSelector).datetimepicker({
                 language: 'en'
             });
+            this._eventListener.trigger("changeRealtimeStatus", this.state.realtimeMode);
         }
     }, {
         key: "componentDidUpdate",
@@ -1247,7 +1249,8 @@ var QueryModalReact = function (_React$Component2) {
                 return false;
             }
             console.log(queryString, startTime, endTime);
-            this.props.updateQuery(queryString, startTime, endTime);
+            this.props.updateQuery(queryString, startTime, endTime, this.state.realtimeMode);
+            this._eventListener.trigger("changeRealtimeStatus", this.state.realtimeMode);
         }
     }, {
         key: "checkQuerySafe",
@@ -1265,6 +1268,8 @@ var QueryModalReact = function (_React$Component2) {
             } else {
                 this.setState({ realtimeMode: "history" });
             }
+
+            this._eventListener.trigger("changeRealtimeStatus", this.state.realtimeMode);
         }
     }]);
 
@@ -1293,6 +1298,7 @@ var HinocChartModuleReact = function (_React$Component3) {
         };
         _this6._influxdbquery = "";
         _this6._chartValue = null;
+        _this6._eventListener = _eventlistener.EventListenerPoll.create(_this6.props.keyid);
         return _this6;
     }
 
@@ -1313,31 +1319,47 @@ var HinocChartModuleReact = function (_React$Component3) {
                 _react2.default.createElement(QueryModalReact, { showConfig: this.state.showConfig, clearShowFlag: function clearShowFlag() {
                         _this7.clearFlag();
                     },
-                    updateQuery: function updateQuery(query, start, end) {
-                        _this7.updateQuery(query, start, end);
-                    } })
+                    updateQuery: function updateQuery(query, start, end, mode) {
+                        _this7.updateQuery(query, start, end, mode);
+                    },
+                    keyid: this.props.keyid })
             );
         }
     }, {
         key: "componentDidMount",
         value: function componentDidMount() {
+            var _this8 = this;
+
+            //        let self = this;
+            //        if(this.queryTimer === undefined) {
+            //            this.queryTimer = setInterval(function(){
+            //                if(self._influxdbquery === undefined || self._influxdbquery === "" || self._influxdbquery.length === 0)
+            //                    return;
+            //                $.get("/mydb", {query: self._influxdbquery}, (data)=>{this.updateData(data);});
+            //            }, 
+            //            5000);
+            //        }
             var self = this;
-            if (this.queryTimer === undefined) {
-                this.queryTimer = setInterval(function () {
-                    if (self._influxdbquery === undefined || self._influxdbquery === "" || self._influxdbquery.length === 0) return;
+            this._eventListener.on("changeRealtimeStatus", function (mode) {
+                if (mode === "history") {
+                    if (_this8.queryTimer !== undefined) {
+                        clearInterval(_this8.queryTimer);
+                    }
+                    console.log("history, query is " + self._influxdbquery);
                     $.get("/mydb", { query: self._influxdbquery }, function (data) {
-                        console.log(data);
-                        if (data.series === undefined) {
-                            return;
-                        }
-                        self.setState({
-                            showConfig: self.state.showConfig,
-                            chartValue: data.series[0].values,
-                            chartName: data.series[0].name
-                        });
+                        _this8.updateData(data);
                     });
-                }, 5000);
-            }
+                } else {
+                    if (_this8.queryTimer === undefined) {
+                        _this8.queryTimer = setInterval(function () {
+                            if (self._influxdbquery === undefined || self._influxdbquery === "" || self._influxdbquery.length === 0) return;
+                            $.get("/mydb", { query: self._influxdbquery }, function (data) {
+                                self.updateData(data);
+                            });
+                        }, 5000);
+                    }
+                }
+            });
         }
     }, {
         key: "showConfig",
@@ -1355,16 +1377,34 @@ var HinocChartModuleReact = function (_React$Component3) {
         }
     }, {
         key: "updateQuery",
-        value: function updateQuery(query, start, end) {
+        value: function updateQuery(query, start, end, mode) {
             //todo: parse sql statement and insert time stamp to somewhere right
             console.log(query, start, end);
-            this._influxdbquery = query + " WHERE time > '" + start + "' AND time < '" + end + "'";
+            if (mode === "history") {
+                this._influxdbquery = query + " WHERE time > '" + start + "' AND time < '" + end + "'";
+            } else if (mode === "realtime") {
+                this._influxdbquery = query + " ORDER BY TIME DESC LIMIT 300";
+            } else {
+                return;
+            }
             console.log(this._influxdbquery);
         }
     }, {
         key: "getQuery",
         value: function getQuery(query) {
             return this._influxdbquery;
+        }
+    }, {
+        key: "updateData",
+        value: function updateData(data) {
+            if (data.series === undefined) {
+                return;
+            }
+            this.setState({
+                showConfig: this.state.showConfig,
+                chartValue: data.series[0].values,
+                chartName: data.series[0].name
+            });
         }
     }]);
 
@@ -1388,18 +1428,22 @@ $(document).ready(function () {
     var arr = [];
     var chartContainer = document.getElementById("charts-container");
     document.getElementById("add-liner-btn").onclick = function () {
-        arr.push(_react2.default.createElement(HinocChartModuleReact, { key: hinocChartCounter, charttype: "line" }));
+        arr.push(_react2.default.createElement(HinocChartModuleReact, { key: hinocChartCounter, charttype: "line", keyid: "" + hinocChartCounter }));
         hinocChartCounter++;
         _reactDom2.default.render(arr, chartContainer);
     };
 
     document.getElementById("add-bar-btn").onclick = function () {
-        arr.push(_react2.default.createElement(HinocChartModuleReact, { key: hinocChartCounter, charttype: "bar" }));
+        arr.push(_react2.default.createElement(HinocChartModuleReact, { key: hinocChartCounter, charttype: "bar", keyid: "" + hinocChartCounter }));
         hinocChartCounter++;
         _reactDom2.default.render(arr, chartContainer);
     };
 
-    document.getElementById("add-pan-btn").onclick = function () {};
+    document.getElementById("add-pan-btn").onclick = function () {
+        arr.push(_react2.default.createElement(HinocChartModuleReact, { key: hinocChartCounter, charttype: "pie", keyid: "" + hinocChartCounter }));
+        hinocChartCounter++;
+        _reactDom2.default.render(arr, chartContainer);
+    };
 });
 
 /***/ }),
@@ -1426,7 +1470,7 @@ var EventProxy = function () {
     }
 
     _createClass(EventProxy, [{
-        key: 'on',
+        key: "on",
         value: function on(key, fn) {
             if (this.onObj[key] === undefined) {
                 this.onObj[key] = [];
@@ -1434,7 +1478,7 @@ var EventProxy = function () {
             this.onObj[key].push(fn);
         }
     }, {
-        key: 'one',
+        key: "one",
         value: function one(key, fn) {
             if (this.oneObj[key] === undefined) {
                 this.oneObj[key] = [];
@@ -1442,13 +1486,13 @@ var EventProxy = function () {
             this.oneObj[key].push(fn);
         }
     }, {
-        key: 'off',
+        key: "off",
         value: function off(key) {
             this.oneObj[key] = [];
             this.onObj[key] = [];
         }
     }, {
-        key: 'trigger',
+        key: "trigger",
         value: function trigger() {
             var key = void 0,
                 args = void 0;
@@ -1474,12 +1518,19 @@ var EventProxy = function () {
     return EventProxy;
 }();
 
+//
+
+
 var EventListenerPoll = function () {
     var _singleton = {};
     function creatProxy(key) {
-        if (_singleton[key] === undefined) {
-            _singleton[key] = new EventProxy();
+        if (key === undefined || key === null || typeof key !== "string" || key.length === 0 || _singleton[key] !== undefined) {
+            console.log("Invalid key in EventListener poll!");
+            return null;
         }
+
+        _singleton[key] = new EventProxy();
+        return _singleton[key];
     };
 
     function getProxy(key) {

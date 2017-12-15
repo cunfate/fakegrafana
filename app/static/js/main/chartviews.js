@@ -105,6 +105,7 @@ class QueryModalReact extends React.Component{
         this.state = {
             realtimeMode : "history"
         };
+        this._eventListener = EventListenerPoll.get(this.props.keyid);
     }
 
     render() {
@@ -145,6 +146,7 @@ class QueryModalReact extends React.Component{
         $(this.refs.endTimeSelector).datetimepicker({
             language: 'en'
         });
+        this._eventListener.trigger("changeRealtimeStatus", this.state.realtimeMode);
     }
 
     componentDidUpdate() {
@@ -165,7 +167,8 @@ class QueryModalReact extends React.Component{
             return false;
         }
         console.log(queryString, startTime, endTime);
-        this.props.updateQuery(queryString, startTime, endTime);
+        this.props.updateQuery(queryString, startTime, endTime, this.state.realtimeMode);
+        this._eventListener.trigger("changeRealtimeStatus", this.state.realtimeMode);
     }
 
     checkQuerySafe(query) {
@@ -183,6 +186,8 @@ class QueryModalReact extends React.Component{
         else {
             this.setState({realtimeMode: "history"});
         }
+
+        this._eventListener.trigger("changeRealtimeStatus", this.state.realtimeMode);
     }
 }
 
@@ -206,30 +211,42 @@ class HinocChartModuleReact extends React.Component{
             <HinocChartReact charttype={this.props.charttype} showConfigTrigger={()=>{this.showConfig();}} 
             chartValue={this.state.chartValue} chartName={this.state.chartName} moduleClose={()=>{ this.setState({mouduleClose:true}); }}/>
             <QueryModalReact showConfig={this.state.showConfig} clearShowFlag={()=>{this.clearFlag();}} 
-            updateQuery={(query, start, end)=>{this.updateQuery(query, start, end);}}/>
+            updateQuery={(query, start, end, mode)=>{this.updateQuery(query, start, end, mode);}}
+            keyid={this.props.keyid}/>
         </div>)
         );
     }
 
     componentDidMount() {
+//        let self = this;
+//        if(this.queryTimer === undefined) {
+//            this.queryTimer = setInterval(function(){
+//                if(self._influxdbquery === undefined || self._influxdbquery === "" || self._influxdbquery.length === 0)
+//                    return;
+//                $.get("/mydb", {query: self._influxdbquery}, (data)=>{this.updateData(data);});
+//            }, 
+//            5000);
+//        }
         let self = this;
-        if(this.queryTimer === undefined) {
-            this.queryTimer = setInterval(function(){
-                if(self._influxdbquery === undefined || self._influxdbquery === "" || self._influxdbquery.length === 0)
-                    return;
-                $.get("/mydb", {query: self._influxdbquery}, function(data){
-                    console.log(data);
-                    if(data.series === undefined) {
-                        return;
-                    }
-                    self.setState({
-                        showConfig: self.state.showConfig,
-                        chartValue: data.series[0].values,
-                        chartName: data.series[0].name
-                    });
-                });
-            }, 5000);
-        }
+        this._eventListener.on("changeRealtimeStatus", (mode)=>{
+            if(mode === "history") {
+                if(this.queryTimer !== undefined) {
+                    clearInterval(this.queryTimer);
+                }
+                console.log(`history, query is ${self._influxdbquery}`);
+                $.get("/mydb", {query: self._influxdbquery}, (data)=>{this.updateData(data);});
+            }
+            else {
+                if(this.queryTimer === undefined) {
+                    this.queryTimer = setInterval(function(){
+                        if(self._influxdbquery === undefined || self._influxdbquery === "" || self._influxdbquery.length === 0)
+                            return;
+                        $.get("/mydb", {query: self._influxdbquery}, (data)=>{self.updateData(data);});
+                    }, 
+                    5000);
+                }
+            }
+        });
     }
 
     showConfig() {
@@ -244,15 +261,34 @@ class HinocChartModuleReact extends React.Component{
         });
     }
 
-    updateQuery(query, start, end) {
+    updateQuery(query, start, end, mode) {
         //todo: parse sql statement and insert time stamp to somewhere right
         console.log(query, start, end);
-        this._influxdbquery = `${query} WHERE time > '${start}' AND time < '${end}'`;
+        if(mode === "history") {
+            this._influxdbquery = `${query} WHERE time > '${start}' AND time < '${end}'`;
+        }
+        else if(mode === "realtime") {
+            this._influxdbquery = `${query} ORDER BY TIME DESC LIMIT 300`;
+        }
+        else {
+            return;
+        }
         console.log(this._influxdbquery);
     }
 
     getQuery(query) {
         return this._influxdbquery;
+    }
+
+    updateData(data) {
+        if(data.series === undefined) {
+            return;
+        }
+        this.setState({
+            showConfig: this.state.showConfig,
+            chartValue: data.series[0].values,
+            chartName: data.series[0].name
+        });
     }
 
 
