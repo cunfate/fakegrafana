@@ -261,9 +261,25 @@ class HinocChartModuleReact extends React.Component{
         });
     }
 
+    preprocessQuery(query, start, end, mode) {
+        if(mode === "history") {
+            let stringrule = /^\s*SELECT \"([^\"]*)\" FROM \"([^\"]*)\" WHERE ([\s\w><=!]*)/g;
+            let result = stringrule.exec(query);
+            let field = result[1];
+            let item = result[2];
+            let choose = result[3]===null ? result[3] : "";
+            return `SELECT ${field} FROM ${item} WHERE ${choose} AND time > ${start} AND time < ${end}`;
+        }
+        else {
+            return `${query} ORDER BY TIME DESC LIMIT 300`;
+        }
+    }
+
     updateQuery(query, start, end, mode) {
         //todo: parse sql statement and insert time stamp to somewhere right
         console.log(query, start, end);
+        this._influxdbquery = this.preprocessQuery(query, start, end, mode);
+        /*
         if(mode === "history") {
             this._influxdbquery = `${query} WHERE time > '${start}' AND time < '${end}'`;
         }
@@ -273,6 +289,7 @@ class HinocChartModuleReact extends React.Component{
         else {
             return;
         }
+        */
         console.log(this._influxdbquery);
     }
 

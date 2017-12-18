@@ -1376,17 +1376,36 @@ var HinocChartModuleReact = function (_React$Component3) {
             });
         }
     }, {
+        key: "preprocessQuery",
+        value: function preprocessQuery(query, start, end, mode) {
+            if (mode === "history") {
+                var stringrule = /^\s*SELECT (\"[^\"]*\") FROM (\"[^\"]*\") WHERE ([\s\w><=!]*)/g;
+                var result = stringrule.exec(query);
+                var field = result[1];
+                var item = result[2];
+                var choose = result[3] === null ? result[3] : "";
+                return "SELECT " + field + " FROM " + item + " WHERE " + choose + " AND time > " + start + " AND time < " + end;
+            } else {
+                return query + " ORDER BY TIME DESC LIMIT 300";
+            }
+        }
+    }, {
         key: "updateQuery",
         value: function updateQuery(query, start, end, mode) {
             //todo: parse sql statement and insert time stamp to somewhere right
             console.log(query, start, end);
-            if (mode === "history") {
-                this._influxdbquery = query + " WHERE time > '" + start + "' AND time < '" + end + "'";
-            } else if (mode === "realtime") {
-                this._influxdbquery = query + " ORDER BY TIME DESC LIMIT 300";
-            } else {
+            this._influxdbquery = this.preprocessQuery(query, start, end, mode);
+            /*
+            if(mode === "history") {
+                this._influxdbquery = `${query} WHERE time > '${start}' AND time < '${end}'`;
+            }
+            else if(mode === "realtime") {
+                this._influxdbquery = `${query} ORDER BY TIME DESC LIMIT 300`;
+            }
+            else {
                 return;
             }
+            */
             console.log(this._influxdbquery);
         }
     }, {
