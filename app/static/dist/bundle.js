@@ -1379,12 +1379,18 @@ var HinocChartModuleReact = function (_React$Component3) {
         key: "preprocessQuery",
         value: function preprocessQuery(query, start, end, mode) {
             if (mode === "history") {
-                var stringrule = /^\s*SELECT (\"[^\"]*\") FROM (\"[^\"]*\") WHERE ([\s\w><=!]*)/g;
+                var stringrule = /^\s*SELECT \"([^\"]*)\" FROM \"([^\"]*)\"(?:\s*WHERE)?\s*([\s\w><=!]*)/;
                 var result = stringrule.exec(query);
+                console.log(result);
                 var field = result[1];
                 var item = result[2];
-                var choose = result[3] === null ? result[3] : "";
-                return "SELECT " + field + " FROM " + item + " WHERE " + choose + " AND time > " + start + " AND time < " + end;
+                var choose = result[3];
+                //let choose = (result[3] === null || result[3].length === 0) ? result[3] + " AND": " ";
+                if (result[3] === null || result[3].length === 0) {
+                    return "SELECT \"" + field + "\" FROM \"" + item + "\" WHERE time > '" + start + "' AND time < '" + end + "'";
+                } else {
+                    return "SELECT \"" + field + "\" FROM \"" + item + "\" WHERE (" + choose + ") AND time > '" + start + "' AND time < '" + end + "'";
+                }
             } else {
                 return query + " ORDER BY TIME DESC LIMIT 300";
             }
@@ -1395,6 +1401,7 @@ var HinocChartModuleReact = function (_React$Component3) {
             //todo: parse sql statement and insert time stamp to somewhere right
             console.log(query, start, end);
             this._influxdbquery = this.preprocessQuery(query, start, end, mode);
+            console.log("Char at 61=", this._influxdbquery.charAt(61));
             /*
             if(mode === "history") {
                 this._influxdbquery = `${query} WHERE time > '${start}' AND time < '${end}'`;
