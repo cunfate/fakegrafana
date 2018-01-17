@@ -76,7 +76,7 @@ class HinocChartReact extends React.Component {
     }
 
     componentDidUpdate() {
-        console.log(this.props);
+        //console.log(this.props);
         let data = this.props.chartValue.map( x => {return {name: x[0].split(".")[0].replace("T", " "),value:[x[0].split(".")[0].replace("T", " "), x[1]] }} );
         this._chart.setOption({
             series:[{data: data}],
@@ -91,9 +91,9 @@ class HinocChartReact extends React.Component {
     }
 
     moduleClose() {
-        console.log("Clicked! - 1");
+        //console.log("Clicked! - 1");
         if(this.props.moduleClose) {
-            console.log("Clicked! - 2");
+            //console.log("Clicked! - 2");
             this.props.moduleClose();
         }
     }
@@ -166,7 +166,7 @@ class QueryModalReact extends React.Component{
         if(!this.checkQuerySafe(queryString)) {
             return false;
         }
-        console.log(queryString, startTime, endTime);
+        //console.log(queryString, startTime, endTime);
         this.props.updateQuery(queryString, startTime, endTime, this.state.realtimeMode);
         this._eventListener.trigger("changeRealtimeStatus", this.state.realtimeMode);
     }
@@ -233,7 +233,7 @@ class HinocChartModuleReact extends React.Component{
                 if(this.queryTimer !== undefined) {
                     clearInterval(this.queryTimer);
                 }
-                console.log(`history, query is ${self._influxdbquery}`);
+                //console.log(`history, query is ${self._influxdbquery}`);
                 $.get("/mydb", {query: self._influxdbquery}, (data)=>{this.updateData(data);});
             }
             else {
@@ -265,7 +265,7 @@ class HinocChartModuleReact extends React.Component{
         if(mode === "history") {
             let stringrule = /^\s*SELECT \"([^\"]*)\" FROM \"([^\"]*)\"(?:\s*WHERE)?\s*([\s\w><=!]*)/;
             let result = stringrule.exec(query);
-            console.log(result);
+            //console.log(result);
             let field = result[1];
             let item = result[2];
             let choose = result[3];
@@ -284,9 +284,9 @@ class HinocChartModuleReact extends React.Component{
 
     updateQuery(query, start, end, mode) {
         //todo: parse sql statement and insert time stamp to somewhere right
-        console.log(query, start, end);
+        //console.log(query, start, end);
         this._influxdbquery = this.preprocessQuery(query, start, end, mode);
-        console.log("Char at 61=", this._influxdbquery.charAt(61));
+        //console.log("Char at 61=", this._influxdbquery.charAt(61));
         /*
         if(mode === "history") {
             this._influxdbquery = `${query} WHERE time > '${start}' AND time < '${end}'`;
@@ -298,7 +298,7 @@ class HinocChartModuleReact extends React.Component{
             return;
         }
         */
-        console.log(this._influxdbquery);
+        //console.log(this._influxdbquery);
     }
 
     getQuery(query) {
