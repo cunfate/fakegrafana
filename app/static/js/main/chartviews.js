@@ -1,6 +1,7 @@
 import {EventListener, EventListenerPoll} from "../eventlistener"
 import React from "react"
 import ReactDOM from "react-dom"
+import * as echarts from 'echarts';
 
 class HinocChartReact extends React.Component {
     constructor(...args) {
@@ -78,6 +79,7 @@ class HinocChartReact extends React.Component {
     componentDidUpdate() {
         //console.log(this.props);
         let data = this.props.chartValue.map( x => {return {name: x[0].split(".")[0].replace("T", " "),value:[x[0].split(".")[0].replace("T", " "), x[1]] }} );
+        console.log(data);
         this._chart.setOption({
             series:[{data: data}],
             title:{
@@ -269,7 +271,7 @@ class HinocChartModuleReact extends React.Component{
             }
         }
         else {
-            return `${query} ORDER BY TIME DESC LIMIT 300`;
+            return `${query} ORDER BY time DESC LIMIT 300`;
         }
     }
 
