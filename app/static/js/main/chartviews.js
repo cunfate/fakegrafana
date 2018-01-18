@@ -218,15 +218,6 @@ class HinocChartModuleReact extends React.Component{
     }
 
     componentDidMount() {
-//        let self = this;
-//        if(this.queryTimer === undefined) {
-//            this.queryTimer = setInterval(function(){
-//                if(self._influxdbquery === undefined || self._influxdbquery === "" || self._influxdbquery.length === 0)
-//                    return;
-//                $.get("/mydb", {query: self._influxdbquery}, (data)=>{this.updateData(data);});
-//            }, 
-//            5000);
-//        }
         let self = this;
         this._eventListener.on("changeRealtimeStatus", (mode)=>{
             if(mode === "history") {
