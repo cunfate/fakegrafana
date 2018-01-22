@@ -1,7 +1,7 @@
 import {EventListener, EventListenerPoll} from "../eventlistener"
 import React from "react"
 import ReactDOM from "react-dom"
-import * as echarts from 'echarts';
+import {Hinoc3DChart} from "./3dcharts"
 
 class HinocChartReact extends React.Component {
     constructor(...args) {
@@ -78,7 +78,7 @@ class HinocChartReact extends React.Component {
 
     componentDidUpdate() {
         //console.log(this.props);
-        let data = this.props.chartValue.map( x => {return {name: x[0].split(".")[0].replace("T", " "),value:[x[0].split(".")[0].replace("T", " "), x[1]] }} );
+        let data = this.props.chartValue.map( x => { [first, ...paras] = x; return {name: x[0].split(".")[0].replace("T", " "),value:[x[0].split(".")[0].replace("T", " "), ...paras] }} );
         console.log(data);
         this._chart.setOption({
             series:[{data: data}],
@@ -208,7 +208,15 @@ class HinocChartModuleReact extends React.Component{
     }
 
     render() {
-        return (this.state.mouduleClose ? (null) : (
+        return (this.state.mouduleClose ? (null) : (this.props.charttype === "3d" ? (
+            <div className="hinoc-chart-container">
+            <Hinoc3DChart charttype={this.props.charttype} showConfigTrigger={()=>{this.showConfig();}} 
+            chartValue={this.state.chartValue} chartName={this.state.chartName} moduleClose={()=>{ this.setState({mouduleClose:true}); }}/>
+            <QueryModalReact showConfig={this.state.showConfig} clearShowFlag={()=>{this.clearFlag();}} 
+            updateQuery={(query, start, end, mode)=>{this.updateQuery(query, start, end, mode);}}
+            keyid={this.props.keyid}/>
+        </div>
+        ) : (
         <div className="hinoc-chart-container">
             <HinocChartReact charttype={this.props.charttype} showConfigTrigger={()=>{this.showConfig();}} 
             chartValue={this.state.chartValue} chartName={this.state.chartName} moduleClose={()=>{ this.setState({mouduleClose:true}); }}/>
@@ -216,6 +224,7 @@ class HinocChartModuleReact extends React.Component{
             updateQuery={(query, start, end, mode)=>{this.updateQuery(query, start, end, mode);}}
             keyid={this.props.keyid}/>
         </div>)
+        )
         );
     }
 
@@ -354,4 +363,13 @@ $(document).ready(function(){
             chartContainer
         );
     };
+
+    document.getElementById("add-3d-btn").onclick = function() {
+        arr.push(<HinocChartModuleReact key={hinocChartCounter} charttype="3d" keyid={`${hinocChartCounter}`}/>);
+        hinocChartCounter ++;
+        ReactDOM.render(
+            arr,
+            chartContainer
+        );
+    }
 });

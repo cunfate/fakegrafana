@@ -3,6 +3,7 @@ from flask import render_template, jsonify
 from ..hinocdb import HinocInfluxDBClient, create_json
 from flask import request
 import os, json, re
+from urllib.parse import urlencode, unquote_plus
 
 
 @main.route('/')
@@ -49,10 +50,12 @@ def insert_to_db():
         return '<h1>OK</h1>', 200
 
 
-@main.route('mydb-statistic')
-def statistic_data():
+@main.route('statistic/<condition>', methods=["GET"])
+def statistic_data(condition):
     '''
     get some statistic data
     '''
-    return_data = None
-    return return_data
+    condition_literal = unquote_plus(condition) #decode the str to url raw string
+    print(condition_literal)
+    return_data = '<h1>OK!</h1><p>{0}</p>'.format(condition_literal)
+    return return_data, 200

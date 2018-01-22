@@ -1,26 +1,31 @@
 import {EventListener, EventListenerPoll} from "../eventlistener"
 import React from "react"
 import ReactDOM from "react-dom"
-import echarts from "echarts"
 
-class Hinoc3DChart extends ReactDOM.Component {
+
+//import {  } from "echarts/lib/component/surface";
+
+class Hinoc3DChart extends React.Component {
     constructor(...args) {
         super(...args);
     }
 
     render() {
-        <div className="col-md-12 panel panel-default" style={{height:460}}>
-            <div className="col-md-12 panel-heading panel-primary" ref={function(ele){self._echartBar = ele;}}>
-                <button type="button" className="btn btn-default" ref={function(ele){self._showConfigButton = ele;}}>
-                    <span className="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
-                </button>
-                <button type="button" className="close" aria-label="Close" onClick={()=>{this.moduleClose()}}>
-                <span className="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                </button>
+        let self = this;
+        return (
+            <div className="col-md-12 panel panel-default" style={{height:460}}>
+                <div className="col-md-12 panel-heading panel-primary" ref={function(ele){self._echartBar = ele;}}>
+                    <button type="button" className="btn btn-default" ref={function(ele){self._showConfigButton = ele;}}>
+                        <span className="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" className="close" aria-label="Close" onClick={()=>{this.moduleClose()}}>
+                    <span className="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div className="col-md-12" ref={function(ele){self._echartContainer = ele;}} style={{height:400}}>
+                </div>
             </div>
-            <div className="col-md-12" ref={function(ele){self._echartContainer = ele;}} style={{height:400}}>
-            </div>
-        </div>
+        );
     }
 
     componentDidMount() {
@@ -41,17 +46,9 @@ class Hinoc3DChart extends ReactDOM.Component {
             grid3D: {
                 axisPointer: {
                     show: false
-                }        
-                
+                }
             },
             series: [{
-                type: 'surface',
-                silent: true,
-                wireframe: {
-                    show: false
-                },
-                itemStyle: {
-                },
             }]
         }
         this.showChart();
@@ -68,3 +65,5 @@ class Hinoc3DChart extends ReactDOM.Component {
         }
     }
 }
+
+export {Hinoc3DChart};

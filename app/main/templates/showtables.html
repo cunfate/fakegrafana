@@ -3,6 +3,8 @@
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('static', filename='js/main/hinocchart.js') }}" type="text/babel"></script>
+<script src="{{ url_for('static', filename='js/echarts.js') }}"></script>
+<script src = "{{ url_for('static', filename='js/echarts-gl.js') }}"></script>
 <script src="{{ url_for('static', filename='dist/bundle.js') }}"></script>
 <script src="{{ url_for('static', filename='js/bootstrap-datetimepicker.min.js') }}"></script>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-datetimepicker.min.css') }}">
@@ -15,9 +17,10 @@
         </div>
         <div class="col-md-12 container" id="add-row-container">
             <div class="btn-group" role="group" aria-label="..." style="display:none" id="row-adder-bar">
-                <button type="button" class="btn btn-default col-md-4" id="add-liner-btn">Liner</button>
-                <button type="button" class="btn btn-default col-md-4" id="add-bar-btn">bar</button>
-                <button type="button" class="btn btn-default col-md-4" id="add-pan-btn">pan</button>
+                <button type="button" class="btn btn-default col-md-3" id="add-liner-btn">Liner</button>
+                <button type="button" class="btn btn-default col-md-3" id="add-bar-btn">bar</button>
+                <button type="button" class="btn btn-default col-md-3" id="add-pan-btn">pan</button>
+                <button type="button" class="btn btn-default col-md-3" id="add-3d-btn">3DPanel</button>
             </div>
             <button id="add-row" class="btn btn-primary" type="button">Add Row</button>
         </div>

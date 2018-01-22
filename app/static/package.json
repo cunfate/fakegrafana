@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "echarts": "^4.0.1",
+    "echarts-gl": "^1.0.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "socketio": "^1.0.0"
