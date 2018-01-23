@@ -2,6 +2,7 @@ import {EventListener, EventListenerPoll} from "../eventlistener"
 import React from "react"
 import ReactDOM from "react-dom"
 import {Hinoc3DChart} from "./3dcharts"
+import {HinocSerializerSet} from "./dataserialization"
 
 class HinocChartReact extends React.Component {
     constructor(...args) {
@@ -78,7 +79,9 @@ class HinocChartReact extends React.Component {
 
     componentDidUpdate() {
         //console.log(this.props);
-        let data = this.props.chartValue.map( x => { [first, ...paras] = x; return {name: x[0].split(".")[0].replace("T", " "),value:[x[0].split(".")[0].replace("T", " "), ...paras] }} );
+        let data = HinocSerializerSet.serialize(this.props.chartName, this.props.chartValue);
+        //this.props.chartValue.map( x => { [first, ...paras] = x; return {name: x[0].split(".")[0].replace("T", " "),value:[x[0].split(".")[0].replace("T", " "), ...paras] }} );
+        
         console.log(data);
         this._chart.setOption({
             series:[{data: data}],
@@ -286,21 +289,7 @@ class HinocChartModuleReact extends React.Component{
 
     updateQuery(query, start, end, mode) {
         //todo: parse sql statement and insert time stamp to somewhere right
-        //console.log(query, start, end);
         this._influxdbquery = this.preprocessQuery(query, start, end, mode);
-        //console.log("Char at 61=", this._influxdbquery.charAt(61));
-        /*
-        if(mode === "history") {
-            this._influxdbquery = `${query} WHERE time > '${start}' AND time < '${end}'`;
-        }
-        else if(mode === "realtime") {
-            this._influxdbquery = `${query} ORDER BY TIME DESC LIMIT 300`;
-        }
-        else {
-            return;
-        }
-        */
-        //console.log(this._influxdbquery);
     }
 
     getQuery(query) {

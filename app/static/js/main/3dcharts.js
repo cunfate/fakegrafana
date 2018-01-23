@@ -33,24 +33,45 @@ class Hinoc3DChart extends React.Component {
         this._chartoption = {
             tooltip: {},
             backgroundColor: '#fff',
+            visualMap: {
+            show: false,
+            dimension: 2,
+            min: 0,
+            max: 23,
+            inRange: {
+                color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+            }},
             xAxis3D: {
-                type: 'value'
+                type: 'time',
+                data: []
             },
             yAxis3D: {
-                type: 'value'
+                type: 'category',
+                data:  Array.from(new Array(1024),(val,index)=>index),
             },
             zAxis3D: {
-                type: 'value',
-                min: 0,
-            },
+            type: 'value',
+            max: 25,
+            splitNumber: 5},
             grid3D: {
-                axisPointer: {
-                    show: false
-                }
+            viewControl: {
+                // projection: 'orthographic'
             },
+            boxHeight: 40,
+            boxWidth: 200,},
             series: [{
+            type: 'surface',
+            wireframe: {
+                show: false
+            },
+            shading: 'color',
+            equation: {
+                z: function(x,y) {
+                    return x + y;
+                }
+            }
             }]
-        }
+          };
         this.showChart();
         this._showConfigButton.addEventListener("click", ()=>{this.props.showConfigTrigger();}, false);
     }

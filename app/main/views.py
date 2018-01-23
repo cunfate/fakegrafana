@@ -8,17 +8,13 @@ from urllib.parse import urlencode, unquote_plus
 
 @main.route('/')
 def index_page():
-    '''
-    show main page
-    '''
+    '''show main page'''
     return render_template('showtables.html')
 
 
 @main.route('mydb')
 def mydb():
-    '''
-    query database information and return raw data
-    '''
+    '''query database information and return raw data'''
     querystr = request.args.get('query')
     dbhost = os.getenv('FAKEGRAFANA_DBHOST')
     dbusername = os.getenv('FAKEGRAFANA_DBUSERNAME')
@@ -33,9 +29,7 @@ def mydb():
 
 @main.route('mydb', methods=['POST'])
 def insert_to_db():
-    '''
-    insert data from http post
-    '''
+    '''insert data from http post'''
     dbhost = os.getenv('FAKEGRAFANA_DBHOST')
     dbusername = os.getenv('FAKEGRAFANA_DBUSERNAME')
     dbdatabase = os.getenv('FAKEGRAFANA_DBNAME')
@@ -52,10 +46,25 @@ def insert_to_db():
 
 @main.route('statistic/<condition>', methods=["GET"])
 def statistic_data(condition):
-    '''
-    get some statistic data
-    '''
+    '''get some statistic data'''
     condition_literal = unquote_plus(condition) #decode the str to url raw string
     print(condition_literal)
     return_data = '<h1>OK!</h1><p>{0}</p>'.format(condition_literal)
     return return_data, 200
+
+
+@main.route('testdb', methods=["GET"])
+def get_data_new_interface():
+    '''interface to get data via database'''
+    item_group = request.args.get('group')
+    items = request.args.get('items')
+    realtime = request.args.get('realtime')
+    starttime = request.args.get('starttime')
+    endtime = request.args.get('endtime')
+    print("item_group = " + item_group + '\n')
+    print("items = " + items + '\n')
+    print("realtime = " + realtime + '\n')
+    print("starttime = " + starttime + '\n')
+    print("endtime = " + endtime + '\n')
+
+    return '<h1>OK!</h1>', 200

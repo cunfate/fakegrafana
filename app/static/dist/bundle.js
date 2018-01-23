@@ -1100,13 +1100,11 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _dcharts = __webpack_require__(28);
 
+var _dataserialization = __webpack_require__(29);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1224,13 +1222,9 @@ var HinocChartReact = function (_React$Component) {
         key: "componentDidUpdate",
         value: function componentDidUpdate() {
             //console.log(this.props);
-            var data = this.props.chartValue.map(function (x) {
-                var _x = _toArray(x);
+            var data = _dataserialization.HinocSerializerSet.serialize(this.props.chartName, this.props.chartValue);
+            //this.props.chartValue.map( x => { [first, ...paras] = x; return {name: x[0].split(".")[0].replace("T", " "),value:[x[0].split(".")[0].replace("T", " "), ...paras] }} );
 
-                first = _x[0];
-                paras = _x.slice(1);
-                return { name: x[0].split(".")[0].replace("T", " "), value: [x[0].split(".")[0].replace("T", " ")].concat(_toConsumableArray(paras)) };
-            });
             console.log(data);
             this._chart.setOption({
                 series: [{ data: data }],
@@ -1563,21 +1557,7 @@ var HinocChartModuleReact = function (_React$Component3) {
         key: "updateQuery",
         value: function updateQuery(query, start, end, mode) {
             //todo: parse sql statement and insert time stamp to somewhere right
-            //console.log(query, start, end);
             this._influxdbquery = this.preprocessQuery(query, start, end, mode);
-            //console.log("Char at 61=", this._influxdbquery.charAt(61));
-            /*
-            if(mode === "history") {
-                this._influxdbquery = `${query} WHERE time > '${start}' AND time < '${end}'`;
-            }
-            else if(mode === "realtime") {
-                this._influxdbquery = `${query} ORDER BY TIME DESC LIMIT 300`;
-            }
-            else {
-                return;
-            }
-            */
-            //console.log(this._influxdbquery);
         }
     }, {
         key: "getQuery",
@@ -18996,22 +18976,46 @@ var Hinoc3DChart = function (_React$Component) {
             this._chartoption = {
                 tooltip: {},
                 backgroundColor: '#fff',
+                visualMap: {
+                    show: false,
+                    dimension: 2,
+                    min: 0,
+                    max: 23,
+                    inRange: {
+                        color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+                    } },
                 xAxis3D: {
-                    type: 'value'
+                    type: 'time',
+                    data: []
                 },
                 yAxis3D: {
-                    type: 'value'
+                    type: 'category',
+                    data: Array.from(new Array(1024), function (val, index) {
+                        return index;
+                    })
                 },
                 zAxis3D: {
                     type: 'value',
-                    min: 0
-                },
+                    max: 25,
+                    splitNumber: 5 },
                 grid3D: {
-                    axisPointer: {
+                    viewControl: {
+                        // projection: 'orthographic'
+                    },
+                    boxHeight: 40,
+                    boxWidth: 200 },
+                series: [{
+                    type: 'surface',
+                    wireframe: {
                         show: false
+                    },
+                    shading: 'color',
+                    equation: {
+                        z: function z(x, y) {
+                            return x + y;
+                        }
                     }
-                },
-                series: [{}]
+                }]
             };
             this.showChart();
             this._showConfigButton.addEventListener("click", function () {
@@ -19036,6 +19040,123 @@ var Hinoc3DChart = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.Hinoc3DChart = Hinoc3DChart;
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var HinocDataSerializer = function () {
+    function HinocDataSerializer() {
+        _classCallCheck(this, HinocDataSerializer);
+    }
+
+    _createClass(HinocDataSerializer, null, [{
+        key: "serialize",
+        value: function serialize(type, data) {
+            if (HinocDataSerializer.prototype[type]) {
+                return HinocDataSerializer.prototype[type](data);
+            }
+            return HinocDataSerializer.defaultSerialize(data);
+        }
+    }, {
+        key: "defaultSerialize",
+        value: function defaultSerialize(data) {
+            if (data) {
+                return data.map(function (x) {
+                    var first = void 0,
+                        paras = void 0;
+
+                    var _x = _toArray(x);
+
+                    first = _x[0];
+                    paras = _x.slice(1);
+
+                    return { name: x[0].split(".")[0].replace("T", " "), value: [x[0].split(".")[0].replace("T", " ")].concat(_toConsumableArray(paras)) };
+                });
+            }
+        }
+    }, {
+        key: "eocDevChanInfo",
+        value: function eocDevChanInfo(data) {
+            if (data) {
+                return data.map(function (x) {
+                    var first = void 0,
+                        paras = void 0;
+
+                    var _x2 = _toArray(x);
+
+                    first = _x2[0];
+                    paras = _x2.slice(1);
+
+                    return {
+                        name: x[0].split(".")[0].replace("T", " "),
+                        value: [x[0].split(".")[0].replace("T", " ")].concat(_toConsumableArray(paras))
+                    };
+                });
+            }
+        }
+    }]);
+
+    return HinocDataSerializer;
+}();
+
+var HinocSerializerSet = {
+    eocDevChanInfo: function eocDevChanInfo(data) {
+        if (data) {
+            return data.map(function (x) {
+                var first = void 0,
+                    paras = void 0;
+
+                var _x3 = _toArray(x);
+
+                first = _x3[0];
+                paras = _x3.slice(1);
+
+                return {
+                    name: x[0].split(".")[0].replace("T", " "),
+                    value: [x[0].split(".")[0].replace("T", " ")].concat(_toConsumableArray(paras))
+                };
+            });
+        }
+    },
+    serialize: function serialize(type, data) {
+        if (HinocSerializerSet[type]) {
+            return HinocSerializerSet[type](data);
+        }
+        return HinocSerializerSet.defaultSerialize(data);
+    },
+
+    defaultSerialize: function defaultSerialize(data) {
+        return data.map(function (x) {
+            var first = void 0,
+                paras = void 0;
+
+            var _x4 = _toArray(x);
+
+            first = _x4[0];
+            paras = _x4.slice(1);
+
+            return { name: x[0].split(".")[0].replace("T", " "), value: [x[0].split(".")[0].replace("T", " ")].concat(_toConsumableArray(paras)) };
+        });
+    }
+};
+
+exports.HinocSerializerSet = HinocSerializerSet;
 
 /***/ })
 /******/ ]);
