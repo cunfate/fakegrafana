@@ -125,7 +125,7 @@ class QueryModalReact extends React.Component{
                 <div className="modal-body">
                     <div className="input-group">
                         <span className="input-group-addon">Query</span>
-                        <input type="text" className="form-control" place-holder="SELECT * FROM /.*/" ref={(ele)=>{this._queryString = ele;}} />
+                        <select className="form-control" ref="itemGroupSelector">Select....</select>
                     </div>
                     <div className="input-group date" ref="startTimeSelector">
                         <span className="input-group-btn add-on"><button type="button" className="btn btn-default">Start <span className="glyphicon glyphicon-calendar" aria-hidden="true"></span></button></span>
@@ -151,6 +151,12 @@ class QueryModalReact extends React.Component{
         $(this.refs.endTimeSelector).datetimepicker({
             language: 'en'
         });
+        $(this.refs.itemGroupSelector).on("click", ()=>{
+            $.get("itemgroup", (data)=>{
+                console.log(data);
+            });
+        });
+        //$(this.refs.)
         this._eventListener.trigger("changeRealtimeStatus", this.state.realtimeMode);
     }
 

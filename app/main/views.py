@@ -1,5 +1,5 @@
 from . import main
-from flask import render_template, jsonify
+from flask import render_template, jsonify, current_app
 from ..hinocdb import HinocInfluxDBClient, create_json
 from flask import request
 import os, json, re
@@ -68,3 +68,15 @@ def get_data_new_interface():
     print("endtime = " + endtime + '\n')
 
     return '<h1>OK!</h1>', 200
+
+
+@main.route('itemgroup', methds=['GET'])
+def get_itemgroups():
+    '''interface to get item groups in influxdb'''
+    dbhost = os.getenv('FAKEGRAFANA_DBHOST')
+    dbusername = os.getenv('FAKEGRAFANA_DBUSERNAME')
+    dbdatabase = os.getenv('FAKEGRAFANA_DBNAME')
+    influx = HinocInfluxDBClient(host=dbhost, port=8086, username=dbusername, database=dbdatabase)
+    data = influx.query('SHOW MEASUREMENTS')
+    data = data['results'][0]['values']
+    return data

@@ -1312,9 +1312,11 @@ var QueryModalReact = function (_React$Component2) {
                                 { className: "input-group-addon" },
                                 "Query"
                             ),
-                            _react2.default.createElement("input", { type: "text", className: "form-control", "place-holder": "SELECT * FROM /.*/", ref: function ref(ele) {
-                                    _this5._queryString = ele;
-                                } })
+                            _react2.default.createElement(
+                                "select",
+                                { className: "form-control", ref: "itemGroupSelector" },
+                                "Select...."
+                            )
                         ),
                         _react2.default.createElement(
                             "div",
@@ -1377,6 +1379,12 @@ var QueryModalReact = function (_React$Component2) {
             $(this.refs.endTimeSelector).datetimepicker({
                 language: 'en'
             });
+            $(this.refs.itemGroupSelector).on("click", function () {
+                $.get("itemgroup", function (data) {
+                    console.log(data);
+                });
+            });
+            //$(this.refs.)
             this._eventListener.trigger("changeRealtimeStatus", this.state.realtimeMode);
         }
     }, {
@@ -19052,48 +19060,16 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var HinocSerializerSet = {
+    eocDevChanInfo: function eocDevChanInfo(data) {
+        var graphtype = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'line';
 
-var HinocDataSerializer = function () {
-    function HinocDataSerializer() {
-        _classCallCheck(this, HinocDataSerializer);
-    }
-
-    _createClass(HinocDataSerializer, null, [{
-        key: "serialize",
-        value: function serialize(type, data) {
-            if (HinocDataSerializer.prototype[type]) {
-                return HinocDataSerializer.prototype[type](data);
-            }
-            return HinocDataSerializer.defaultSerialize(data);
-        }
-    }, {
-        key: "defaultSerialize",
-        value: function defaultSerialize(data) {
-            if (data) {
-                return data.map(function (x) {
-                    var first = void 0,
-                        paras = void 0;
-
-                    var _x = _toArray(x);
-
-                    first = _x[0];
-                    paras = _x.slice(1);
-
-                    return { name: x[0].split(".")[0].replace("T", " "), value: [x[0].split(".")[0].replace("T", " ")].concat(_toConsumableArray(paras)) };
-                });
-            }
-        }
-    }, {
-        key: "eocDevChanInfo",
-        value: function eocDevChanInfo(data) {
-            if (data) {
+        if (data) {
+            if (graphtype === 'line' || graphtype === 'bar' || graphtype === 'pie') {
                 return data.map(function (x) {
                     var first = void 0,
                         paras = void 0;
@@ -19108,50 +19084,43 @@ var HinocDataSerializer = function () {
                         value: [x[0].split(".")[0].replace("T", " ")].concat(_toConsumableArray(paras))
                     };
                 });
+            } else if (graphtype === '3d') {
+                var retdata = [];
+                for (var items in data) {
+                    var time = items[0];
+                    for (var i = 1; i < items.length; i++) {
+                        retdata.push([time, i - 1, items[i]]);
+                    }
+                }
+                return retdata;
             }
-        }
-    }]);
-
-    return HinocDataSerializer;
-}();
-
-var HinocSerializerSet = {
-    eocDevChanInfo: function eocDevChanInfo(data) {
-        if (data) {
-            return data.map(function (x) {
-                var first = void 0,
-                    paras = void 0;
-
-                var _x3 = _toArray(x);
-
-                first = _x3[0];
-                paras = _x3.slice(1);
-
-                return {
-                    name: x[0].split(".")[0].replace("T", " "),
-                    value: [x[0].split(".")[0].replace("T", " ")].concat(_toConsumableArray(paras))
-                };
-            });
         }
     },
     serialize: function serialize(type, data) {
+        var graphtype = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'line';
+
         if (HinocSerializerSet[type]) {
-            return HinocSerializerSet[type](data);
+            return HinocSerializerSet[type](data, graphtype);
         }
         return HinocSerializerSet.defaultSerialize(data);
     },
 
     defaultSerialize: function defaultSerialize(data) {
+        var graphtype = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'line';
+
         return data.map(function (x) {
             var first = void 0,
                 paras = void 0;
 
-            var _x4 = _toArray(x);
+            var _x5 = _toArray(x);
 
-            first = _x4[0];
-            paras = _x4.slice(1);
+            first = _x5[0];
+            paras = _x5.slice(1);
 
-            return { name: x[0].split(".")[0].replace("T", " "), value: [x[0].split(".")[0].replace("T", " ")].concat(_toConsumableArray(paras)) };
+            return {
+                name: x[0].split(".")[0].replace("T", " "),
+                value: [x[0].split(".")[0].replace("T", " ")].concat(_toConsumableArray(paras))
+            };
         });
     }
 };
