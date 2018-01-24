@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 16);
+/******/ 	return __webpack_require__(__webpack_require__.s = 17);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -303,9 +303,9 @@ module.exports = emptyFunction;
 /* WEBPACK VAR INJECTION */(function(process) {
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports = __webpack_require__(17);
-} else {
   module.exports = __webpack_require__(18);
+} else {
+  module.exports = __webpack_require__(19);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
@@ -677,7 +677,7 @@ exports.EventListenerPoll = EventListenerPoll;
 if (process.env.NODE_ENV !== 'production') {
   var invariant = __webpack_require__(5);
   var warning = __webpack_require__(6);
-  var ReactPropTypesSecret = __webpack_require__(19);
+  var ReactPropTypesSecret = __webpack_require__(20);
   var loggedTypeFailures = {};
 }
 
@@ -766,9 +766,9 @@ if (process.env.NODE_ENV === 'production') {
   // DCE check should happen before ReactDOM bundle executes so that
   // DevTools can report bad minification during injection.
   checkDCE();
-  module.exports = __webpack_require__(20);
+  module.exports = __webpack_require__(21);
 } else {
-  module.exports = __webpack_require__(23);
+  module.exports = __webpack_require__(24);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
@@ -1022,7 +1022,7 @@ module.exports = shallowEqual;
  * 
  */
 
-var isTextNode = __webpack_require__(21);
+var isTextNode = __webpack_require__(22);
 
 /*eslint-disable no-bitwise */
 
@@ -1086,6 +1086,84 @@ module.exports = focusNode;
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
+
+var HinocSerializerSet = {
+    eocDevChanInfo: function eocDevChanInfo(data) {
+        var graphtype = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'line';
+
+        if (data) {
+            if (graphtype === 'line' || graphtype === 'bar' || graphtype === 'pie') {
+                return data.map(function (x) {
+                    var first = void 0,
+                        paras = void 0;
+
+                    var _x2 = _toArray(x);
+
+                    first = _x2[0];
+                    paras = _x2.slice(1);
+
+                    return {
+                        name: x[0].split(".")[0].replace("T", " "),
+                        value: [x[0].split(".")[0].replace("T", " ")].concat(_toConsumableArray(paras))
+                    };
+                });
+            } else if (graphtype === '3d') {
+                var retdata = [];
+                data.forEach(function (items) {
+                    var time = items[0].split(".")[0];
+                    for (var i = 1; i < items.length; i++) {
+                        retdata.push([new Date(time), i - 1, items[i]]);
+                    }
+                });
+                return retdata;
+            }
+        }
+    },
+    serialize: function serialize(type, data) {
+        var graphtype = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'line';
+
+        if (HinocSerializerSet[type]) {
+            return HinocSerializerSet[type](data, graphtype);
+        }
+        return HinocSerializerSet.defaultSerialize(data);
+    },
+
+    defaultSerialize: function defaultSerialize(data) {
+        var graphtype = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'line';
+
+        return data.map(function (x) {
+            var first = void 0,
+                paras = void 0;
+
+            var _x5 = _toArray(x);
+
+            first = _x5[0];
+            paras = _x5.slice(1);
+
+            return {
+                name: x[0].split(".")[0].replace("T", " "),
+                value: [x[0].split(".")[0].replace("T", " ")].concat(_toConsumableArray(paras))
+            };
+        });
+    }
+};
+
+exports.HinocSerializerSet = HinocSerializerSet;
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _eventlistener = __webpack_require__(7);
@@ -1098,9 +1176,9 @@ var _reactDom = __webpack_require__(9);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _dcharts = __webpack_require__(28);
+var _dcharts = __webpack_require__(29);
 
-var _dataserialization = __webpack_require__(29);
+var _dataserialization = __webpack_require__(16);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1111,6 +1189,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function appendArrayToSelector(selector, data) {
+    if (!selector || !data instanceof Array) {
+        return false;
+    }
+    selector.innerHTML = "";
+    for (var item in data) {
+        var child = document.createElement("option");
+        child.innerText = data[item];
+        selector.appendChild(child);
+    }
+}
 
 var HinocChartReact = function (_React$Component) {
     _inherits(HinocChartReact, _React$Component);
@@ -1310,11 +1400,54 @@ var QueryModalReact = function (_React$Component2) {
                             _react2.default.createElement(
                                 "span",
                                 { className: "input-group-addon" },
+                                _react2.default.createElement(
+                                    "a",
+                                    { ref: "queryButton" },
+                                    _react2.default.createElement("span", { className: "glyphicon glyphicon-refresh", "aria-hidden": "true" })
+                                ),
                                 "Query"
                             ),
                             _react2.default.createElement(
                                 "select",
                                 { className: "form-control", ref: "itemGroupSelector" },
+                                "Select...."
+                            )
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "input-group" },
+                            _react2.default.createElement(
+                                "span",
+                                { className: "input-group-addon" },
+                                _react2.default.createElement(
+                                    "a",
+                                    { ref: "itemButton" },
+                                    _react2.default.createElement("span", { className: "glyphicon glyphicon-refresh" })
+                                ),
+                                "Item"
+                            ),
+                            _react2.default.createElement(
+                                "select",
+                                { className: "form-control", ref: "itemSelector" },
+                                "Select...."
+                            )
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "input-group" },
+                            _react2.default.createElement(
+                                "span",
+                                { className: "input-group-addon" },
+                                _react2.default.createElement(
+                                    "a",
+                                    { ref: "deviceButton" },
+                                    _react2.default.createElement("span", { className: "glyphicon glyphicon-refresh" })
+                                ),
+                                "Device Mac Addr"
+                            ),
+                            _react2.default.createElement(
+                                "select",
+                                { className: "form-control", ref: "deviceSelector" },
                                 "Select...."
                             )
                         ),
@@ -1373,18 +1506,31 @@ var QueryModalReact = function (_React$Component2) {
     }, {
         key: "componentDidMount",
         value: function componentDidMount() {
+            var _this6 = this;
+
             $(this.refs.startTimeSelector).datetimepicker({
                 language: 'en'
             });
             $(this.refs.endTimeSelector).datetimepicker({
                 language: 'en'
             });
-            $(this.refs.itemGroupSelector).on("click", function () {
+            $(this.refs.queryButton).on("click", function () {
                 $.get("itemgroup", function (data) {
-                    console.log(data);
+                    appendArrayToSelector(_this6.refs.itemGroupSelector, data);
                 });
             });
-            //$(this.refs.)
+            $(this.refs.itemButton).on("click", function () {
+                $.get("oamitem", { group: _this6.refs.itemGroupSelector.options[_this6.refs.itemGroupSelector.selectedIndex].innerText }, function (data) {
+                    appendArrayToSelector(_this6.refs.itemSelector, data);
+                });
+            });
+            $(this.refs.deviceButton).on("click", function () {
+                $.get("devices", {
+                    group: _this6.refs.itemGroupSelector.options[_this6.refs.itemGroupSelector.selectedIndex].innerText
+                }, function (data) {
+                    appendArrayToSelector(_this6.refs.deviceSelector, data);
+                });
+            });
             this._eventListener.trigger("changeRealtimeStatus", this.state.realtimeMode);
         }
     }, {
@@ -1399,16 +1545,31 @@ var QueryModalReact = function (_React$Component2) {
         key: "submitQuery",
         value: function submitQuery() {
             $(this._modal).modal("hide");
-            var queryString = this._queryString.value;
             var startTimeTextLabel = this.refs.startTimeSelector.getElementsByClassName("form-control")[0];
             var endTimeTextLabel = this.refs.endTimeSelector.getElementsByClassName("form-control")[0];
             var startTime = startTimeTextLabel.value;
             var endTime = endTimeTextLabel.value;
-            if (!this.checkQuerySafe(queryString)) {
-                return false;
+            var group = this.refs.itemGroupSelector.options[this.refs.itemGroupSelector.selectedIndex].innerText;
+            var item = this.refs.itemSelector.options[this.refs.itemSelector.selectedIndex].innerText;
+            var addr = this.refs.deviceSelector.options[this.refs.deviceSelector.selectedIndex].innerText;
+
+            if (group === "eocDevChanInfo" && this.props.charttype === "3d") {
+                var itemstr = item.split('-')[0];
+                item = "/" + itemstr + "-[0-9]{1,}/";
+            } else {
+                item = "\"" + item + "\"";
             }
+
+            var queryConfig = {
+                group: group,
+                item: item,
+                starttime: startTime,
+                endtime: endTime,
+                realtime: this.state.realtimeMode === "realtime",
+                addr: addr
+            };
             //console.log(queryString, startTime, endTime);
-            this.props.updateQuery(queryString, startTime, endTime, this.state.realtimeMode);
+            this.props.updateQuery(queryConfig);
             this._eventListener.trigger("changeRealtimeStatus", this.state.realtimeMode);
         }
     }, {
@@ -1447,79 +1608,101 @@ var HinocChartModuleReact = function (_React$Component3) {
             args[_key3] = arguments[_key3];
         }
 
-        var _this6 = _possibleConstructorReturn(this, (_ref3 = HinocChartModuleReact.__proto__ || Object.getPrototypeOf(HinocChartModuleReact)).call.apply(_ref3, [this].concat(args)));
+        var _this7 = _possibleConstructorReturn(this, (_ref3 = HinocChartModuleReact.__proto__ || Object.getPrototypeOf(HinocChartModuleReact)).call.apply(_ref3, [this].concat(args)));
 
-        _this6.state = {
+        _this7.state = {
             showConfig: false,
             chartValue: [],
             chartName: "new hinoc chart",
             mouduleClose: false
         };
-        _this6._influxdbquery = "";
-        _this6._chartValue = null;
-        _this6._eventListener = _eventlistener.EventListenerPoll.create(_this6.props.keyid);
-        return _this6;
+        _this7._influxdbquery = "";
+        _this7._chartValue = null;
+        _this7._eventListener = _eventlistener.EventListenerPoll.create(_this7.props.keyid);
+        _this7._queryConfig = {
+            group: "",
+            item: "",
+            realtime: false,
+            starttime: "",
+            endtime: "",
+            addr: ""
+        };
+        return _this7;
     }
 
     _createClass(HinocChartModuleReact, [{
         key: "render",
         value: function render() {
-            var _this7 = this;
+            var _this8 = this;
 
             return this.state.mouduleClose ? null : this.props.charttype === "3d" ? _react2.default.createElement(
                 "div",
                 { className: "hinoc-chart-container" },
                 _react2.default.createElement(_dcharts.Hinoc3DChart, { charttype: this.props.charttype, showConfigTrigger: function showConfigTrigger() {
-                        _this7.showConfig();
+                        _this8.showConfig();
                     },
                     chartValue: this.state.chartValue, chartName: this.state.chartName, moduleClose: function moduleClose() {
-                        _this7.setState({ mouduleClose: true });
+                        _this8.setState({ mouduleClose: true });
                     } }),
                 _react2.default.createElement(QueryModalReact, { showConfig: this.state.showConfig, clearShowFlag: function clearShowFlag() {
-                        _this7.clearFlag();
+                        _this8.clearFlag();
                     },
-                    updateQuery: function updateQuery(query, start, end, mode) {
-                        _this7.updateQuery(query, start, end, mode);
+                    updateQuery: function updateQuery(query) {
+                        _this8.updateQuery(query);
                     },
-                    keyid: this.props.keyid })
+                    keyid: this.props.keyid, charttype: this.props.charttype })
             ) : _react2.default.createElement(
                 "div",
                 { className: "hinoc-chart-container" },
                 _react2.default.createElement(HinocChartReact, { charttype: this.props.charttype, showConfigTrigger: function showConfigTrigger() {
-                        _this7.showConfig();
+                        _this8.showConfig();
                     },
                     chartValue: this.state.chartValue, chartName: this.state.chartName, moduleClose: function moduleClose() {
-                        _this7.setState({ mouduleClose: true });
+                        _this8.setState({ mouduleClose: true });
                     } }),
                 _react2.default.createElement(QueryModalReact, { showConfig: this.state.showConfig, clearShowFlag: function clearShowFlag() {
-                        _this7.clearFlag();
+                        _this8.clearFlag();
                     },
-                    updateQuery: function updateQuery(query, start, end, mode) {
-                        _this7.updateQuery(query, start, end, mode);
+                    updateQuery: function updateQuery(query) {
+                        _this8.updateQuery(query);
                     },
-                    keyid: this.props.keyid })
+                    keyid: this.props.keyid, charttype: this.props.charttype })
             );
         }
     }, {
         key: "componentDidMount",
         value: function componentDidMount() {
-            var _this8 = this;
+            var _this9 = this;
 
             var self = this;
             this._eventListener.on("changeRealtimeStatus", function (mode) {
                 if (mode === "history") {
-                    if (_this8.queryTimer !== undefined) {
-                        clearInterval(_this8.queryTimer);
+                    if (_this9.queryTimer !== undefined) {
+                        clearInterval(_this9.queryTimer);
                     }
                     //console.log(`history, query is ${self._influxdbquery}`);
-                    $.get("/mydb", { query: self._influxdbquery }, function (data) {
-                        _this8.updateData(data);
+                    $.get("/testdb", {
+                        group: _this9._queryConfig.group,
+                        items: _this9._queryConfig.item,
+                        realtime: _this9._queryConfig.realtime,
+                        starttime: _this9._queryConfig.starttime,
+                        endtime: _this9._queryConfig.endtime,
+                        addr: _this9._queryConfig.addr
+                    }, function (data) {
+                        _this9.updateData(data);
                     });
                 } else {
-                    if (_this8.queryTimer === undefined) {
-                        _this8.queryTimer = setInterval(function () {
+                    if (_this9.queryTimer === undefined) {
+                        _this9.queryTimer = setInterval(function () {
                             if (self._influxdbquery === undefined || self._influxdbquery === "" || self._influxdbquery.length === 0) return;
-                            $.get("/mydb", { query: self._influxdbquery }, function (data) {
+                            $.get("/testdb", {
+                                group: this._queryConfig.group,
+                                items: this._queryConfig.item,
+                                realtime: this._queryConfig.realtime,
+                                starttime: this._queryConfig.starttime,
+                                endtime: this._queryConfig.endtime,
+                                addr: this._queryConfig.addr
+                            }, function (data) {
                                 self.updateData(data);
                             });
                         }, 5000);
@@ -1563,9 +1746,10 @@ var HinocChartModuleReact = function (_React$Component3) {
         }
     }, {
         key: "updateQuery",
-        value: function updateQuery(query, start, end, mode) {
+        value: function updateQuery(querydata) {
             //todo: parse sql statement and insert time stamp to somewhere right
-            this._influxdbquery = this.preprocessQuery(query, start, end, mode);
+            //this._influxdbquery = this.preprocessQuery(query, start, end, mode);
+            this._queryConfig = querydata;
         }
     }, {
         key: "getQuery",
@@ -1631,7 +1815,7 @@ $(document).ready(function () {
 });
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1659,7 +1843,7 @@ isValidElement:K,version:"16.2.0",__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_F
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3024,7 +3208,7 @@ module.exports = react;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3043,7 +3227,7 @@ module.exports = ReactPropTypesSecret;
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3279,7 +3463,7 @@ Z.injectIntoDevTools({findFiberByHostInstance:pb,bundleType:0,version:"16.2.0",r
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3294,7 +3478,7 @@ Z.injectIntoDevTools({findFiberByHostInstance:pb,bundleType:0,version:"16.2.0",r
  * @typechecks
  */
 
-var isNode = __webpack_require__(22);
+var isNode = __webpack_require__(23);
 
 /**
  * @param {*} object The object to check.
@@ -3307,7 +3491,7 @@ function isTextNode(object) {
 module.exports = isTextNode;
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3335,7 +3519,7 @@ function isNode(object) {
 module.exports = isNode;
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3369,8 +3553,8 @@ var containsNode = __webpack_require__(14);
 var focusNode = __webpack_require__(15);
 var emptyObject = __webpack_require__(4);
 var checkPropTypes = __webpack_require__(8);
-var hyphenateStyleName = __webpack_require__(24);
-var camelizeStyleName = __webpack_require__(26);
+var hyphenateStyleName = __webpack_require__(25);
+var camelizeStyleName = __webpack_require__(27);
 
 /**
  * WARNING: DO NOT manually require this module.
@@ -18737,7 +18921,7 @@ module.exports = reactDom;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18752,7 +18936,7 @@ module.exports = reactDom;
 
 
 
-var hyphenate = __webpack_require__(25);
+var hyphenate = __webpack_require__(26);
 
 var msPattern = /^ms-/;
 
@@ -18779,7 +18963,7 @@ function hyphenateStyleName(string) {
 module.exports = hyphenateStyleName;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18815,7 +18999,7 @@ function hyphenate(string) {
 module.exports = hyphenate;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18830,7 +19014,7 @@ module.exports = hyphenate;
 
 
 
-var camelize = __webpack_require__(27);
+var camelize = __webpack_require__(28);
 
 var msPattern = /^-ms-/;
 
@@ -18858,7 +19042,7 @@ function camelizeStyleName(string) {
 module.exports = camelizeStyleName;
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18893,7 +19077,7 @@ function camelize(string) {
 module.exports = camelize;
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18907,6 +19091,8 @@ exports.Hinoc3DChart = undefined;
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _eventlistener = __webpack_require__(7);
+
+var _dataserialization = __webpack_require__(16);
 
 var _react = __webpack_require__(2);
 
@@ -18984,51 +19170,45 @@ var Hinoc3DChart = function (_React$Component) {
             this._chartoption = {
                 tooltip: {},
                 backgroundColor: '#fff',
-                visualMap: {
-                    show: false,
-                    dimension: 2,
-                    min: 0,
-                    max: 23,
-                    inRange: {
-                        color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
-                    } },
                 xAxis3D: {
-                    type: 'time',
-                    data: []
+                    type: 'time'
                 },
                 yAxis3D: {
-                    type: 'category',
-                    data: Array.from(new Array(1024), function (val, index) {
-                        return index;
-                    })
+                    type: 'value'
                 },
                 zAxis3D: {
-                    type: 'value',
-                    max: 25,
-                    splitNumber: 5 },
+                    type: 'value'
+                },
                 grid3D: {
                     viewControl: {
                         // projection: 'orthographic'
                     },
-                    boxHeight: 40,
-                    boxWidth: 200 },
+                    boxHeight: 40
+                },
                 series: [{
-                    type: 'surface',
+                    type: 'bar3D',
                     wireframe: {
-                        show: false
+                        show: true
                     },
                     shading: 'color',
-                    equation: {
-                        z: function z(x, y) {
-                            return x + y;
-                        }
-                    }
+                    data: [[new Date("2017-11-16T08:46:33"), 1, 666666], [new Date("2017-11-16T08:46:33"), 2, 2]]
                 }]
             };
             this.showChart();
             this._showConfigButton.addEventListener("click", function () {
                 _this3.props.showConfigTrigger();
             }, false);
+        }
+    }, {
+        key: "componentDidUpdate",
+        value: function componentDidUpdate() {
+            var data = _dataserialization.HinocSerializerSet.serialize(this.props.chartName, this.props.chartValue, '3d');
+            //this.props.chartValue.map( x => { [first, ...paras] = x; return {name: x[0].split(".")[0].replace("T", " "),value:[x[0].split(".")[0].replace("T", " "), ...paras] }} );
+
+            console.log(data);
+            this._chart.setOption({
+                series: [{ data: data }]
+            });
         }
     }, {
         key: "showChart",
@@ -19048,84 +19228,6 @@ var Hinoc3DChart = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.Hinoc3DChart = Hinoc3DChart;
-
-/***/ }),
-/* 29 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
-
-var HinocSerializerSet = {
-    eocDevChanInfo: function eocDevChanInfo(data) {
-        var graphtype = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'line';
-
-        if (data) {
-            if (graphtype === 'line' || graphtype === 'bar' || graphtype === 'pie') {
-                return data.map(function (x) {
-                    var first = void 0,
-                        paras = void 0;
-
-                    var _x2 = _toArray(x);
-
-                    first = _x2[0];
-                    paras = _x2.slice(1);
-
-                    return {
-                        name: x[0].split(".")[0].replace("T", " "),
-                        value: [x[0].split(".")[0].replace("T", " ")].concat(_toConsumableArray(paras))
-                    };
-                });
-            } else if (graphtype === '3d') {
-                var retdata = [];
-                for (var items in data) {
-                    var time = items[0];
-                    for (var i = 1; i < items.length; i++) {
-                        retdata.push([time, i - 1, items[i]]);
-                    }
-                }
-                return retdata;
-            }
-        }
-    },
-    serialize: function serialize(type, data) {
-        var graphtype = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'line';
-
-        if (HinocSerializerSet[type]) {
-            return HinocSerializerSet[type](data, graphtype);
-        }
-        return HinocSerializerSet.defaultSerialize(data);
-    },
-
-    defaultSerialize: function defaultSerialize(data) {
-        var graphtype = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'line';
-
-        return data.map(function (x) {
-            var first = void 0,
-                paras = void 0;
-
-            var _x5 = _toArray(x);
-
-            first = _x5[0];
-            paras = _x5.slice(1);
-
-            return {
-                name: x[0].split(".")[0].replace("T", " "),
-                value: [x[0].split(".")[0].replace("T", " ")].concat(_toConsumableArray(paras))
-            };
-        });
-    }
-};
-
-exports.HinocSerializerSet = HinocSerializerSet;
 
 /***/ })
 /******/ ]);

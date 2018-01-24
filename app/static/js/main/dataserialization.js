@@ -13,12 +13,12 @@ let HinocSerializerSet = {
             }
             else if(graphtype === '3d') {
                 let retdata = [];
-                for(let items in data) {
-                    let time = items[0];
+                data.forEach(items => {
+                    let time = items[0].split(".")[0];
                     for(let i = 1; i < items.length; i++) {
-                        retdata.push([time, i - 1, items[i]]);
+                        retdata.push([new Date(time), i - 1, items[i]]);
                     }
-                }
+                });
                 return retdata;
             }
         }

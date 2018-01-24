@@ -4,6 +4,18 @@ import ReactDOM from "react-dom"
 import {Hinoc3DChart} from "./3dcharts"
 import {HinocSerializerSet} from "./dataserialization"
 
+function appendArrayToSelector(selector, data) {
+    if(!selector || !data instanceof Array) {
+        return false;
+    }
+    selector.innerHTML = "";
+    for(let item in data) {
+        let child = document.createElement("option");
+        child.innerText = data[item];
+        selector.appendChild(child);
+    }
+}
+
 class HinocChartReact extends React.Component {
     constructor(...args) {
         super(...args);
@@ -124,8 +136,16 @@ class QueryModalReact extends React.Component{
                 </div>
                 <div className="modal-body">
                     <div className="input-group">
-                        <span className="input-group-addon">Query</span>
+                        <span className="input-group-addon"><a ref="queryButton"><span className="glyphicon glyphicon-refresh" aria-hidden="true"></span></a>Query</span>
                         <select className="form-control" ref="itemGroupSelector">Select....</select>
+                    </div>
+                    <div className="input-group">
+                        <span className="input-group-addon"><a ref="itemButton"><span className="glyphicon glyphicon-refresh"></span></a>Item</span>
+                        <select className="form-control" ref="itemSelector">Select....</select>
+                    </div>
+                    <div className="input-group">
+                        <span className="input-group-addon"><a ref="deviceButton"><span className="glyphicon glyphicon-refresh"></span></a>Device Mac Addr</span>
+                        <select className="form-control" ref="deviceSelector">Select....</select>
                     </div>
                     <div className="input-group date" ref="startTimeSelector">
                         <span className="input-group-btn add-on"><button type="button" className="btn btn-default">Start <span className="glyphicon glyphicon-calendar" aria-hidden="true"></span></button></span>
@@ -151,12 +171,23 @@ class QueryModalReact extends React.Component{
         $(this.refs.endTimeSelector).datetimepicker({
             language: 'en'
         });
-        $(this.refs.itemGroupSelector).on("click", ()=>{
+        $(this.refs.queryButton).on("click", ()=>{
             $.get("itemgroup", (data)=>{
-                console.log(data);
+                appendArrayToSelector(this.refs.itemGroupSelector, data);
             });
         });
-        //$(this.refs.)
+        $(this.refs.itemButton).on("click", ()=>{
+            $.get("oamitem", {group: this.refs.itemGroupSelector.options[this.refs.itemGroupSelector.selectedIndex].innerText}, (data)=>{
+                appendArrayToSelector(this.refs.itemSelector, data);
+            });
+        });
+        $(this.refs.deviceButton).on("click", ()=>{
+            $.get("devices", {
+                group: this.refs.itemGroupSelector.options[this.refs.itemGroupSelector.selectedIndex].innerText                
+            }, (data)=>{
+                appendArrayToSelector(this.refs.deviceSelector, data);
+            });
+        });
         this._eventListener.trigger("changeRealtimeStatus", this.state.realtimeMode);
     }
 
@@ -169,16 +200,31 @@ class QueryModalReact extends React.Component{
 
     submitQuery() {
         $(this._modal).modal("hide");
-        let queryString = this._queryString.value;
         let startTimeTextLabel = this.refs.startTimeSelector.getElementsByClassName("form-control")[0];
         let endTimeTextLabel = this.refs.endTimeSelector.getElementsByClassName("form-control")[0];
         let startTime = startTimeTextLabel.value;
         let endTime = endTimeTextLabel.value;
-        if(!this.checkQuerySafe(queryString)) {
-            return false;
+        let group = this.refs.itemGroupSelector.options[this.refs.itemGroupSelector.selectedIndex].innerText;
+        let item = this.refs.itemSelector.options[this.refs.itemSelector.selectedIndex].innerText;
+        let addr = this.refs.deviceSelector.options[this.refs.deviceSelector.selectedIndex].innerText;
+
+        if(group === "eocDevChanInfo" && this.props.charttype === "3d") {
+            let itemstr = item.split('-')[0];
+            item = `/${itemstr}-[0-9]{1,}/`
+        } else {
+            item = `"${item}"`;
         }
+
+        let queryConfig = {
+            group: group,
+            item: item,
+            starttime: startTime,
+            endtime: endTime,
+            realtime: this.state.realtimeMode === "realtime",
+            addr: addr
+        };
         //console.log(queryString, startTime, endTime);
-        this.props.updateQuery(queryString, startTime, endTime, this.state.realtimeMode);
+        this.props.updateQuery(queryConfig);
         this._eventListener.trigger("changeRealtimeStatus", this.state.realtimeMode);
     }
 
@@ -214,6 +260,14 @@ class HinocChartModuleReact extends React.Component{
         this._influxdbquery = "";
         this._chartValue = null;
         this._eventListener = EventListenerPoll.create(this.props.keyid);
+        this._queryConfig = {
+            group: "",
+            item: "",
+            realtime: false,
+            starttime: "",
+            endtime: "",
+            addr: ""
+        };
     }
 
     render() {
@@ -222,16 +276,16 @@ class HinocChartModuleReact extends React.Component{
             <Hinoc3DChart charttype={this.props.charttype} showConfigTrigger={()=>{this.showConfig();}} 
             chartValue={this.state.chartValue} chartName={this.state.chartName} moduleClose={()=>{ this.setState({mouduleClose:true}); }}/>
             <QueryModalReact showConfig={this.state.showConfig} clearShowFlag={()=>{this.clearFlag();}} 
-            updateQuery={(query, start, end, mode)=>{this.updateQuery(query, start, end, mode);}}
-            keyid={this.props.keyid}/>
+            updateQuery={(query)=>{this.updateQuery(query);}}
+            keyid={this.props.keyid} charttype={this.props.charttype} />
         </div>
         ) : (
         <div className="hinoc-chart-container">
             <HinocChartReact charttype={this.props.charttype} showConfigTrigger={()=>{this.showConfig();}} 
             chartValue={this.state.chartValue} chartName={this.state.chartName} moduleClose={()=>{ this.setState({mouduleClose:true}); }}/>
             <QueryModalReact showConfig={this.state.showConfig} clearShowFlag={()=>{this.clearFlag();}} 
-            updateQuery={(query, start, end, mode)=>{this.updateQuery(query, start, end, mode);}}
-            keyid={this.props.keyid}/>
+            updateQuery={(query)=>{this.updateQuery(query);}}
+            keyid={this.props.keyid} charttype={this.props.charttype}/>
         </div>)
         )
         );
@@ -245,14 +299,28 @@ class HinocChartModuleReact extends React.Component{
                     clearInterval(this.queryTimer);
                 }
                 //console.log(`history, query is ${self._influxdbquery}`);
-                $.get("/mydb", {query: self._influxdbquery}, (data)=>{this.updateData(data);});
+                $.get("/testdb", {
+                    group: this._queryConfig.group,
+                    items: this._queryConfig.item,
+                    realtime: this._queryConfig.realtime,
+                    starttime: this._queryConfig.starttime,
+                    endtime: this._queryConfig.endtime,
+                    addr: this._queryConfig.addr
+                }, (data)=>{this.updateData(data);});
             }
             else {
                 if(this.queryTimer === undefined) {
                     this.queryTimer = setInterval(function(){
                         if(self._influxdbquery === undefined || self._influxdbquery === "" || self._influxdbquery.length === 0)
                             return;
-                        $.get("/mydb", {query: self._influxdbquery}, (data)=>{self.updateData(data);});
+                        $.get("/testdb", {
+                            group: this._queryConfig.group,
+                            items: this._queryConfig.item,
+                            realtime: this._queryConfig.realtime,
+                            starttime: this._queryConfig.starttime,
+                            endtime: this._queryConfig.endtime,
+                            addr: this._queryConfig.addr
+                        }, (data)=>{self.updateData(data);});
                     }, 
                     5000);
                 }
@@ -293,9 +361,10 @@ class HinocChartModuleReact extends React.Component{
         }
     }
 
-    updateQuery(query, start, end, mode) {
+    updateQuery(querydata) {
         //todo: parse sql statement and insert time stamp to somewhere right
-        this._influxdbquery = this.preprocessQuery(query, start, end, mode);
+        //this._influxdbquery = this.preprocessQuery(query, start, end, mode);
+        this._queryConfig = querydata;
     }
 
     getQuery(query) {

@@ -1,4 +1,5 @@
 import {EventListener, EventListenerPoll} from "../eventlistener"
+import {HinocSerializerSet} from "./dataserialization"
 import React from "react"
 import ReactDOM from "react-dom"
 
@@ -33,47 +34,42 @@ class Hinoc3DChart extends React.Component {
         this._chartoption = {
             tooltip: {},
             backgroundColor: '#fff',
-            visualMap: {
-            show: false,
-            dimension: 2,
-            min: 0,
-            max: 23,
-            inRange: {
-                color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
-            }},
             xAxis3D: {
-                type: 'time',
-                data: []
+                type: 'time'
             },
             yAxis3D: {
-                type: 'category',
-                data:  Array.from(new Array(1024),(val,index)=>index),
+                type: 'value',
             },
             zAxis3D: {
-            type: 'value',
-            max: 25,
-            splitNumber: 5},
+                type: 'value',
+            },
             grid3D: {
-            viewControl: {
-                // projection: 'orthographic'
+                viewControl: {
+                    // projection: 'orthographic'
+                },
+                boxHeight: 40
             },
-            boxHeight: 40,
-            boxWidth: 200,},
             series: [{
-            type: 'surface',
-            wireframe: {
-                show: false
-            },
-            shading: 'color',
-            equation: {
-                z: function(x,y) {
-                    return x + y;
-                }
-            }
-            }]
-          };
+                type: 'bar3D',
+                wireframe: {
+                    show: true
+                },
+                shading: 'color',
+                data:[[new Date("2017-11-16T08:46:33"), 1, 666666], [new Date("2017-11-16T08:46:33"), 2, 2]]
+            }],
+        };
         this.showChart();
         this._showConfigButton.addEventListener("click", ()=>{this.props.showConfigTrigger();}, false);
+    }
+
+    componentDidUpdate() {
+        let data = HinocSerializerSet.serialize(this.props.chartName, this.props.chartValue, '3d');
+        //this.props.chartValue.map( x => { [first, ...paras] = x; return {name: x[0].split(".")[0].replace("T", " "),value:[x[0].split(".")[0].replace("T", " "), ...paras] }} );
+        
+        console.log(data);
+        this._chart.setOption({
+            series:[{data: data}]
+        });
     }
 
     showChart() {
