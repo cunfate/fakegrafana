@@ -1,30 +1,17 @@
-from . import main
-from flask import render_template, jsonify, current_app
-from ..hinocdb import HinocInfluxDBClient, create_json
+'''routes processing functions of the app'''
+import os
+from urllib.parse import unquote_plus
 from flask import request
-import os, json, re
-from urllib.parse import urlencode, unquote_plus
+from flask import render_template, jsonify
+from influxdb.exceptions import InfluxDBClientError
+from . import main
+from ..hinocdb import HinocInfluxDBClient
 
 
 @main.route('/')
 def index_page():
     '''show main page'''
     return render_template('showtables.html')
-
-
-@main.route('mydb')
-def mydb():
-    '''query database information and return raw data'''
-    querystr = request.args.get('query')
-    dbhost = os.getenv('FAKEGRAFANA_DBHOST')
-    dbusername = os.getenv('FAKEGRAFANA_DBUSERNAME')
-    dbdatabase = os.getenv('FAKEGRAFANA_DBNAME')
-    if querystr == "" or querystr is None:
-        return jsonify([]), 500
-    influx = HinocInfluxDBClient(host=dbhost, port=8086, username=dbusername, database=dbdatabase)
-    result = influx.query(querystr)
-    # print(result.raw)
-    return jsonify(result.raw)
 
 
 @main.route('mydb', methods=['POST'])
@@ -37,8 +24,8 @@ def insert_to_db():
     querystr = str(request.get_data(), encoding='utf-8')
     try:
         influx.insert_from_json_str(querystr)
-    except Exception as e:
-        print(e)
+    except InfluxDBClientError as exception:
+        print(exception)
         return '<h1>Bad Request</h1>', 400
     else:
         return '<h1>OK</h1>', 200
@@ -72,7 +59,7 @@ def get_data_new_interface():
                 items, item_group, addr, starttime, endtime
             )
     else:
-        query_statement = 'SELECT %s FROM "%s" WHERE "HmAddr" = \'%s\' ORDER BY time DESC LIMIT 300' % (
+        query_statement = 'SELECT %s FROM "%s" WHERE "HmAddr" = \'%s\' ORDER BY time DESC LIMIT 100' % (
                 items, item_group, addr
             )
     print(query_statement)

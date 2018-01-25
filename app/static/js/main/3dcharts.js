@@ -4,8 +4,6 @@ import React from "react"
 import ReactDOM from "react-dom"
 
 
-//import {  } from "echarts/lib/component/surface";
-
 class Hinoc3DChart extends React.Component {
     constructor(...args) {
         super(...args);
@@ -63,9 +61,7 @@ class Hinoc3DChart extends React.Component {
     }
 
     componentDidUpdate() {
-        let data = HinocSerializerSet.serialize(this.props.chartName, this.props.chartValue, '3d');
-        //this.props.chartValue.map( x => { [first, ...paras] = x; return {name: x[0].split(".")[0].replace("T", " "),value:[x[0].split(".")[0].replace("T", " "), ...paras] }} );
-        
+        let data = HinocSerializerSet.serialize(this.props.chartName, this.props.chartValue, '3d');        
         console.log(data);
         this._chart.setOption({
             series:[{data: data}]

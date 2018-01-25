@@ -1,25 +1,30 @@
 'use strict'
+///Evenr proxy to listen events from react components
 class EventProxy {
     constructor() {
         this.onObj = {};
         this.oneObj = {};
     }
+    //register an event handler function, to process the event EACH time, which event identifier should be a string.
     on(key, fn) {
         if (this.onObj[key] === undefined) {
             this.onObj[key] = [];
         }
         this.onObj[key].push(fn);
     }
+    //register an event handler function, to process the event ONCE, which event identifier should be a string.
     one(key, fn) {
         if (this.oneObj[key] === undefined) {
             this.oneObj[key] = [];
         }
         this.oneObj[key].push(fn);
     }
+    //unregister an event handler
     off(key) {
         this.oneObj[key] = [];
         this.onObj[key] = [];
     }
+    //trig an event and call the handler function
     trigger() {
         let key, args;
         if (arguments.length === 0)
@@ -42,7 +47,7 @@ class EventProxy {
     }
 }
 
-//
+//create an eventproxy poll, every key has a eventproxy object, which have some events and handler functions.
 let EventListenerPoll = (function(){
     var _singleton = {};
     function creatProxy(key) {
