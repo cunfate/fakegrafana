@@ -50,7 +50,7 @@ class Hinoc3DChart extends React.Component {
                 boxHeight: 40
             },
             series: [{
-                type: 'bar3D',
+                type: 'surface',
                 wireframe: {
                     show: true
                 },

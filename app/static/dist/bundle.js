@@ -1116,7 +1116,7 @@ var HinocSerializerSet = {
                 });
             } else if (graphtype === '3d') {
                 var retdata = [];
-                data.forEach(function (items) {
+                data.slice(0, 100).forEach(function (items) {
                     var time = items[0].split(".")[0];
                     for (var i = 1; i < items.length; i++) {
                         retdata.push([new Date(time), i - 1, items[i]]);
@@ -19186,7 +19186,7 @@ var Hinoc3DChart = function (_React$Component) {
                     boxHeight: 40
                 },
                 series: [{
-                    type: 'bar3D',
+                    type: 'surface',
                     wireframe: {
                         show: true
                     },
